@@ -1045,6 +1045,10 @@ tr:last-child td {
   margin-left: 16px;
 }
 
+.profile-panel:empty {
+  display: none;
+}
+
 .profile-btn {
   display: none !important;
   align-items: center;
@@ -1188,6 +1192,7 @@ tr:last-child td {
   .nav-toggle {
     display: inline-flex;
     margin-left: auto;
+    order: 2;
   }
 
   .nav-links {
@@ -1213,8 +1218,15 @@ tr:last-child td {
     display: none;
   }
 
+  .profile-panel {
+    display: none;
+  }
+
   .nav-logout-btn {
     width: 100%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
     padding: 12px 16px;
     margin-top: 12px;
     background: rgba(239, 68, 68, 0.15);
@@ -1363,6 +1375,41 @@ tr:last-child td {
 
   table {
     min-width: 560px;
+  }
+
+  #student-dashboard .grid,
+  #lecturer-dashboard .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+  }
+
+  #student-dashboard .tile-link.card,
+  #student-dashboard .grid > .card,
+  #lecturer-dashboard .tile-link.card,
+  #lecturer-dashboard .grid > .card {
+    padding: 16px;
+    border-radius: 18px;
+  }
+
+  #student-dashboard .tile-icon,
+  #lecturer-dashboard .tile-icon {
+    width: 44px;
+    height: 44px;
+    margin-bottom: 12px;
+    border-radius: 14px;
+    font-size: 1.2rem;
+  }
+
+  #student-dashboard .grid > .card h3,
+  #lecturer-dashboard .grid > .card h3 {
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+
+  #student-dashboard .grid > .card p,
+  #lecturer-dashboard .grid > .card p {
+    font-size: 0.86rem;
+    line-height: 1.45;
   }
 }
 

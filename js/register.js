@@ -54,9 +54,8 @@ document.addEventListener('DOMContentLoaded', () => {
         const result = await AUTH.registerStudentDb(name, email, regNumber, password);
 
         if (result.requiresEmailConfirmation) {
-          registerMessage.textContent = result.message;
-          registerMessage.className = 'message success';
           registerForm.reset();
+          window.location.href = `account-created.html?mode=confirmation&email=${encodeURIComponent(email)}`;
           return;
         }
 

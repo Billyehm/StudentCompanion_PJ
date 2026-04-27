@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Account Created - Student Companion</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .success-shell {
+      min-height: 100vh;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .success-card {
+      width: min(560px, 100%);
+      padding: 32px;
+      text-align: center;
+    }
+
+    .success-mark {
+      width: 72px;
+      height: 72px;
+      margin: 0 auto 18px;
+      border-radius: 24px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: #04111f;
+      font-size: 2rem;
+      font-weight: 800;
+    }
+
+    .success-card h1 {
+      margin-bottom: 10px;
+      font-size: clamp(1.9rem, 5vw, 2.4rem);
+    }
+
+    .success-card p {
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .success-email {
+      color: #dbeafe;
+      font-weight: 700;
+      word-break: break-word;
+    }
+
+    .success-actions {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 22px;
+    }
+
+    @media (max-width: 640px) {
+      .success-card {
+        padding: 24px 18px;
+      }
+
+      .success-actions {
+        flex-direction: column;
+      }
+
+      .success-actions > * {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <main class="success-shell">
+    <section class="center-box success-card">
+      <div class="success-mark">✓</div>
+      <span class="badge">Account created</span>
+      <h1>Check your email</h1>
+      <p>Your Student Companion account was created successfully.</p>
+      <p id="confirmation-copy">
+        We sent a confirmation link to your email. Open it to activate your account, then come back and log in.
+      </p>
+      <p id="confirmation-email" class="success-email" hidden></p>
+
+      <div class="success-actions">
+        <a class="btn" href="login.html">Go to Login</a>
+        <a class="btn btn-secondary" href="register.html">Use another email</a>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const params = new URLSearchParams(window.location.search);
+      const email = (params.get('email') || '').trim();
+      const emailEl = document.getElementById('confirmation-email');
+      const copyEl = document.getElementById('confirmation-copy');
+
+      if (email && emailEl) {
+        emailEl.hidden = false;
+        emailEl.textContent = email;
+      }
+
+      if (params.get('mode') === 'confirmation' && copyEl) {
+        copyEl.textContent = 'We sent a confirmation link to your email. Open it to verify your account, then come back and log in.';
+      }
+    });
+  </script>
+</body>
+</html>
