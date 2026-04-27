@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Attendance - Student Companion</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
+  <style>
+    #video-container {
+      position: relative;
+      width: 100%;
+      max-width: 500px;
+      margin: 0 auto;
+      background: #000;
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    #video {
+      width: 100%;
+      display: block;
+    }
+    .camera-overlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 250px;
+      height: 250px;
+      border: 3px solid #4CAF50;
+      border-radius: 12px;
+      box-shadow: 0 0 0 2000px rgba(0,0,0,0.5);
+    }
+    .status-box {
+      padding: 1.5rem;
+      border-radius: 12px;
+      margin: 1.5rem 0;
+      text-align: center;
+    }
+    .status-box.success {
+      background: rgba(76, 175, 80, 0.1);
+      border: 2px solid #4CAF50;
+      color: #4CAF50;
+    }
+    .status-box.error {
+      background: rgba(255, 107, 107, 0.1);
+      border: 2px solid #ff6b6b;
+      color: #ff6b6b;
+    }
+    .status-box.pending {
+      background: rgba(255, 193, 7, 0.1);
+      border: 2px solid #ffc107;
+      color: #ffc107;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <nav class="navbar">
+        <div class="brand">
+          <span class="brand-mark">SC</span>
+          <div class="brand-copy">
+            <h2>Student Companion</h2>
+            <p>Attendance Scanning</p>
+          </div>
+        </div>
+
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>Menu</button>
+
+                <div class="nav-links" data-nav-links id="nav-menu">
+          <a class="nav-link" href="dashboard.html">Home</a>
+          <a class="nav-link" href="attendance.html">Attendance</a>
+          <a class="nav-link" href="directory.html">Directory</a>
+          <a class="nav-link" href="results.html">Results</a>
+          <a class="nav-link" href="medical.html">Medical</a>
+          <a class="nav-link" href="chatbot.html">AI Assistant</a>
+          <a class="nav-link" href="course-rep.html">Course Rep</a>
+          <a class="nav-link" href="profile.html">Profile</a>
+          <a class="nav-link" href="lecturer-qr.html">Generate QR</a>
+          <a class="nav-link" href="lecturer-attendance.html">View Attendance</a>
+        </div>
+
+        <div class="profile-panel">
+                    <button id="logout-btn" class="logout-button" type="button" aria-label="Logout">Logout</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="page-intro">
+        <div>
+          <h2>Scan QR Code</h2>
+          <p>Point your camera at the QR code displayed by your lecturer to mark attendance.</p>
+        </div>
+        <span class="badge" id="scan-status-badge">Ready to scan</span>
+      </section>
+
+      <div id="scan-location-status" class="status-box pending" style="display: none; max-width: 600px; margin: 0 auto 1.5rem auto;">
+        <h3 style="margin: 0 0 0.5rem 0;" id="location-title">Checking location...</h3>
+        <p id="location-text" style="margin: 0;"></p>
+      </div>
+
+      <div style="max-width: 600px; margin: 0 auto;">
+        <!-- Camera Feed -->
+        <div id="video-container">
+          <video id="video" autoplay muted playsinline></video>
+          <div class="camera-overlay"></div>
+        </div>
+
+        <!-- Status Message -->
+        <div id="status-message" class="status-box pending" style="display: none;">
+          <h3 style="margin: 0 0 0.5rem 0;" id="status-title">Initializing camera...</h3>
+          <p id="status-text" style="margin: 0;"></p>
+        </div>
+
+        <!-- Attendance Result -->
+        <div id="result-message" class="status-box" style="display: none;">
+          <h3 style="margin: 0 0 0.5rem 0;" id="result-title"></h3>
+          <p id="result-text" style="margin: 0;"></p>
+          <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;" id="result-details"></p>
+        </div>
+
+        <!-- Controls -->
+        <div style="text-align: center; margin: 2rem 0;">
+          <button id="toggle-camera-btn" class="btn" style="margin-right: 0.5rem;">📷 Start Camera</button>
+          <button id="reset-scan-btn" class="btn btn-secondary">🔄 Reset</button>
+        </div>
+
+        <!-- Scanning History -->
+        <section style="margin-top: 3rem;">
+          <h3>Scanning History</h3>
+          <div id="history-list"></div>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/shared.js"></script>
+  <script src="../js/attendance.js"></script>
+</body>
+</html>

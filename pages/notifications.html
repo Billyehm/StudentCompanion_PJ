@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notifications</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <style>
+    .notification-list {
+      display: grid;
+      gap: 12px;
+    }
+
+    .notification-item {
+      border: 1px solid var(--border);
+      background: var(--surface-soft);
+      border-radius: 14px;
+      padding: 14px;
+    }
+
+    .notification-item.expired {
+      opacity: 0.78;
+      border-style: dashed;
+    }
+
+    .notification-meta {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      flex-wrap: wrap;
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-bottom: 8px;
+    }
+
+    .notification-empty {
+      color: var(--muted);
+      text-align: center;
+      padding: 30px 10px;
+    }
+
+    .notification-prompt {
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <nav class="navbar">
+        <div class="brand">
+          <span class="brand-mark">SC</span>
+          <div class="brand-copy">
+            <h2>Notifications</h2>
+            <p>Class rep announcements</p>
+          </div>
+        </div>
+
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>Menu</button>
+
+        <div class="nav-links" data-nav-links id="nav-menu">
+          <a class="nav-link" href="dashboard.html">Home</a>
+        </div>
+
+        <div class="profile-panel">
+          <button id="logout-btn" class="logout-button" type="button" aria-label="Logout">Logout</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="page-intro">
+        <div>
+          <h2>Announcements</h2>
+          <p>All announcements sent by class representatives appear here.</p>
+        </div>
+        <span class="badge" id="announcement-count">0 total</span>
+      </section>
+
+      <section id="notifications-profile-prompt" class="card notification-prompt" hidden>
+        <h3>Complete Your Profile</h3>
+        <p id="notifications-prompt-text" class="muted" hidden></p>
+        <a class="btn" href="profile.html">Update Profile</a>
+      </section>
+
+      <section class="card">
+        <div id="notification-list" class="notification-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/shared.js"></script>
+  <script src="../js/notifications.js"></script>
+</body>
+</html>

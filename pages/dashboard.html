@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Dashboard - Student Companion</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <nav class="navbar">
+        <div class="brand">
+          <span class="brand-mark">SC</span>
+          <div class="brand-copy">
+            <h2>Student Companion</h2>
+            <p id="role-subtitle">Daily academic dashboard</p>
+          </div>
+        </div>
+
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>Menu</button>
+
+                <div class="nav-links" data-nav-links id="nav-menu">
+          <a class="nav-link" href="dashboard.html">Home</a>
+          <a class="nav-link" href="attendance.html">Attendance</a>
+          <a class="nav-link" href="directory.html">Directory</a>
+          <a class="nav-link" href="results.html">Results</a>
+          <a class="nav-link" href="medical.html">Medical</a>
+          <a class="nav-link" href="chatbot.html">AI Assistant</a>
+          <a class="nav-link" href="course-rep.html">Course Rep</a>
+          <a class="nav-link" href="profile.html">Profile</a>
+          <a class="nav-link" href="timetable.html">Timetable</a>
+          <a class="nav-link" href="lecturer-qr.html">Generate QR</a>
+          <a class="nav-link" href="lecturer-attendance.html">View Attendance</a>
+        </div>
+
+        <div class="profile-panel">
+                    <button id="logout-btn" class="logout-button" type="button" aria-label="Logout">Logout</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container">
+      <!-- STUDENT DASHBOARD -->
+      <div id="student-dashboard">
+        <section class="page-intro">
+          <div>
+            <h2 id="dashboard-greeting">Welcome, Student</h2>
+            <p>Scan attendance, check courses, and stay organized in one place.</p>
+          </div>
+          <span class="badge" id="dashboard-day-badge">Study mode active</span>
+        </section>
+
+        <section class="summary-strip">
+          <article class="summary-item">
+            <span>Attendance check-ins</span>
+            <strong id="student-attendance-count">0</strong>
+          </article>
+          <article class="summary-item">
+            <span>Courses</span>
+            <strong id="student-course-count">0</strong>
+          </article>
+          <article class="summary-item">
+            <span>Directory access</span>
+            <strong>✓</strong>
+          </article>
+        </section>
+
+        <section class="grid">
+          <a class="card tile-link" href="attendance.html">
+            <div class="tile-icon">📱</div>
+            <h3>Scan Attendance</h3>
+            <p>Use QR scanner to mark your attendance for classes.</p>
+          </a>
+
+          <a class="card tile-link" href="directory.html">
+            <div class="tile-icon">📇</div>
+            <h3>Directory</h3>
+            <p>Find student and lecturer contact information.</p>
+          </a>
+
+          <a class="card tile-link" href="medical.html">
+            <div class="tile-icon">🏥</div>
+            <h3>Medical Panel</h3>
+            <p>Check symptoms with AI-powered health assessment.</p>
+          </a>
+
+          <a class="card tile-link" href="results.html">
+            <div class="tile-icon">📊</div>
+            <h3>Results</h3>
+            <p>Track your academic performance and CGPA.</p>
+          </a>
+
+          <div class="card tile-link" onclick="window.location.href='timetable.html'" style="cursor: pointer;">
+            <div class="tile-icon">📅</div>
+            <h3>Class Timetable</h3>
+            <p>View your class schedule and upcoming lectures.</p>
+            <div id="timetablePreview" style="margin-top: 12px; font-size: 0.85em; color: var(--muted);"></div>
+          </div>
+
+          <a class="card tile-link" href="chatbot.html">
+            <div class="tile-icon">🤖</div>
+            <h3>AI Assistant</h3>
+            <p>Chat with our AI for course and academic help.</p>
+          </a>
+        </section>
+      </div>
+
+      <!-- LECTURER DASHBOARD -->
+      <div id="lecturer-dashboard" style="display: none;">
+        <section class="page-intro">
+          <div>
+            <h2 id="lecturer-greeting">Welcome, Professor</h2>
+            <p>Manage attendance, generate QR codes, and track student participation.</p>
+          </div>
+          <span class="badge" id="lecturer-day-badge">Lecturer mode active</span>
+        </section>
+
+        <section class="summary-strip">
+          <article class="summary-item">
+            <span>Active QR Sessions</span>
+            <strong id="lecturer-active-sessions">0</strong>
+          </article>
+          <article class="summary-item">
+            <span>Total Attendance Records</span>
+            <strong id="lecturer-total-attendance">0</strong>
+          </article>
+          <article class="summary-item">
+            <span>Classes Managed</span>
+            <strong id="lecturer-class-count">0</strong>
+          </article>
+        </section>
+
+        <section class="grid">
+          <a class="card tile-link" href="lecturer-qr.html">
+            <div class="tile-icon">🔲</div>
+            <h3>Generate QR Code</h3>
+            <p>Create a new QR session for student attendance.</p>
+          </a>
+
+          <a class="card tile-link" href="lecturer-attendance.html">
+            <div class="tile-icon">📋</div>
+            <h3>View Attendance</h3>
+            <p>Check attendance records and download attendance data.</p>
+          </a>
+
+          <a class="card tile-link" href="directory.html">
+            <div class="tile-icon">📇</div>
+            <h3>Directory</h3>
+            <p>Access student information and contact details.</p>
+          </a>
+        </section>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/shared.js"></script>
+  <script src="../js/dashboard.js"></script>
+</body>
+</html>

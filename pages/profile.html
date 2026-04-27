@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Profile - Student Companion</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .profile-header {
+      padding: 2rem;
+      background: rgba(76, 175, 80, 0.1);
+      border-radius: 12px;
+      border: 2px solid rgba(76, 175, 80, 0.3);
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+    .profile-avatar {
+      width: 96px;
+      height: 96px;
+      border-radius: 50%;
+      background: #4CAF50;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      margin: 0 auto 1rem;
+    }
+
+    .profile-role {
+      font-size: 0.85rem;
+      color: rgba(255,255,255,0.72);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .profile-tabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-bottom: 1rem;
+    }
+
+    .profile-tab-btn {
+      border: 1px solid var(--border);
+      background: rgba(255,255,255,0.06);
+      color: var(--text);
+      padding: 14px;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .profile-tab-btn.active {
+      background: rgba(34, 197, 94, 0.18);
+      border-color: rgba(34, 197, 94, 0.46);
+    }
+
+    .profile-panel {
+      display: none;
+    }
+
+    .profile-panel.active {
+      display: block;
+    }
+
+    .security-note {
+      color: var(--muted);
+      font-size: 0.85rem;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .locked-note {
+      display: none !important;
+      color: #fde68a;
+      font-size: 0.9rem;
+      margin-top: 8px;
+    }
+
+    @media (max-width: 760px) {
+      .profile-tabs {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <nav class="navbar">
+        <div class="brand">
+          <span class="brand-mark">SC</span>
+          <div class="brand-copy">
+            <h2>Student Companion</h2>
+            <p id="page-subtitle">Manage Your Profile</p>
+          </div>
+        </div>
+
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>Menu</button>
+
+        <div class="nav-links" data-nav-links id="nav-menu">
+          <a class="nav-link" href="dashboard.html">Home</a>
+          <a class="nav-link" href="attendance.html">Attendance</a>
+          <a class="nav-link" href="directory.html">Directory</a>
+          <a class="nav-link" href="results.html">Results</a>
+          <a class="nav-link" href="medical.html">Medical</a>
+          <a class="nav-link" href="chatbot.html">AI Assistant</a>
+          <a class="nav-link" href="course-rep.html">Course Rep</a>
+          <a class="nav-link" href="profile.html">Profile</a>
+          <a class="nav-link" href="lecturer-qr.html">Generate QR</a>
+          <a class="nav-link" href="lecturer-attendance.html">View Attendance</a>
+        </div>
+
+        <div class="profile-panel-shell">
+          <button id="logout-btn" class="logout-button" type="button" aria-label="Logout">Logout</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="page-intro">
+        <div>
+          <h2>Profile Center</h2>
+          <p id="profile-description">Manage your account.</p>
+        </div>
+        <span class="badge" id="role-badge">Student</span>
+      </section>
+
+      <div class="profile-header">
+        <div class="profile-avatar" id="profile-avatar-display">U</div>
+        <h3 id="profile-name-display">Your Name</h3>
+        <p class="profile-role" id="profile-role-display">Student</p>
+      </div>
+
+      <div class="profile-tabs">
+        <button id="tab-profile-btn" class="profile-tab-btn active" type="button">Profile Info</button>
+        <button id="tab-security-btn" class="profile-tab-btn" type="button">Security Info</button>
+      </div>
+
+      <section id="profile-panel" class="card profile-panel active">
+        <div id="student-profile">
+          <h3>Academic Profile</h3>
+          <form id="student-form" class="field-grid section-gap">
+            <div class="field-group">
+              <label for="student-name">Full Name</label>
+              <input id="student-name" type="text" readonly>
+            </div>
+
+            <div class="field-group">
+              <label for="student-id">Registration Number</label>
+              <input id="student-id" type="text" readonly>
+            </div>
+
+            <div class="field-group">
+              <label for="student-email">Email</label>
+              <input id="student-email" type="email" readonly>
+            </div>
+
+            <div class="field-group">
+              <label for="student-faculty">Faculty *</label>
+              <select id="student-faculty" required></select>
+            </div>
+
+            <div class="field-group">
+              <label for="student-department">Department *</label>
+              <select id="student-department" required></select>
+            </div>
+
+            <div class="field-group">
+              <label for="student-level">Level *</label>
+              <select id="student-level" required></select>
+            </div>
+
+            <div class="card-actions">
+              <button id="student-save-btn" type="submit" class="btn">Save Profile</button>
+            </div>
+          </form>
+
+          <p id="student-lock-note" class="locked-note"></p>
+          <p id="student-message" class="message"></p>
+        </div>
+
+        <div id="lecturer-profile" style="display: none;">
+          <h3>Teaching Profile</h3>
+          <form id="lecturer-form" class="field-grid section-gap">
+            <div class="field-group">
+              <label for="lecturer-name">Full Name</label>
+              <input id="lecturer-name" type="text">
+            </div>
+
+            <div class="field-group">
+              <label for="lecturer-email">Email</label>
+              <input id="lecturer-email" type="email" readonly>
+            </div>
+
+            <div class="field-group">
+              <label for="lecturer-title">Title *</label>
+              <input id="lecturer-title" type="text" placeholder="Lecturer" required>
+            </div>
+
+            <div class="field-group">
+              <label for="lecturer-faculty">Faculty *</label>
+              <select id="lecturer-faculty" required></select>
+            </div>
+
+            <div class="field-group">
+              <label for="lecturer-department">Department *</label>
+              <select id="lecturer-department" required></select>
+            </div>
+
+            <div class="field-group">
+              <label for="lecturer-level">Primary Level</label>
+              <select id="lecturer-level"></select>
+            </div>
+
+            <div class="card-actions">
+              <button id="lecturer-save-btn" type="submit" class="btn">Save Profile</button>
+            </div>
+          </form>
+
+          <p id="lecturer-lock-note" class="locked-note"></p>
+          <p id="lecturer-message" class="message"></p>
+        </div>
+      </section>
+
+      <section id="security-panel" class="card profile-panel">
+        <h3>Security Settings</h3>
+        <form id="email-form" class="field-grid section-gap">
+          <h4>Change Email</h4>
+          <div class="field-group">
+            <label for="security-email">New Email</label>
+            <input id="security-email" type="email" placeholder="new-email@university.edu">
+            <p id="email-cooldown-note" class="security-note"></p>
+          </div>
+          <div class="card-actions">
+            <button id="email-save-btn" type="submit" class="btn">Update Email</button>
+          </div>
+        </form>
+
+        <form id="password-form" class="field-grid section-gap" style="margin-top: 20px;">
+          <h4>Change Password</h4>
+          <div class="field-group">
+            <label for="security-password">New Password</label>
+            <input id="security-password" type="password" placeholder="Enter a new password">
+          </div>
+          <div class="field-group">
+            <label for="security-password-confirm">Confirm Password</label>
+            <input id="security-password-confirm" type="password" placeholder="Confirm the new password">
+            <p id="password-cooldown-note" class="security-note"></p>
+          </div>
+          <div class="card-actions">
+            <button id="password-save-btn" type="submit" class="btn">Update Password</button>
+          </div>
+        </form>
+
+        <p id="security-message" class="message"></p>
+
+        <section class="card" style="margin-top: 20px;">
+          <div class="card-actions">
+            <button id="profile-logout-bottom" class="btn btn-secondary btn-block" type="button">Logout</button>
+          </div>
+        </section>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/shared.js"></script>
+  <script src="../js/profile.js"></script>
+</body>
+</html>

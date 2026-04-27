@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Student Companion</title>
+  <link rel="stylesheet" href="css/style.css">
+  <script src="js/supabase-config.js"></script>
+  <script src="js/auth.js"></script>
+  <script>
+    // Redirect if already logged in
+    document.addEventListener('DOMContentLoaded', () => {
+      if (AUTH.isLoggedIn()) {
+        window.location.href = 'pages/dashboard.html';
+      }
+    });
+  </script>
+</head>
+<body>
+  <main class="page-shell">
+    <section class="hero">
+      <div class="hero-panel">
+        <span class="eyebrow">Built for smarter campus life</span>
+        <h1>Your student support hub, ready in your pocket.</h1>
+        <p>
+          Track attendance, check results, and reach classmates or lecturers from one simple,
+          mobile-friendly experience that feels easy to use on any screen.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn" href="pages/login.html">Get Started</a>
+          <a class="btn btn-secondary" href="pages/register.html">Create Account</a>
+        </div>
+      </div>
+
+      <aside class="hero-side">
+        <div class="stack">
+          <div>
+            <span class="badge">Campus tools in one place</span>
+            <div class="feature-list">
+              <div class="feature-item">
+                <span class="feature-icon">QR</span>
+                <div>
+                  <h3>Faster attendance</h3>
+                  <p>Simulate and manage check-ins without clutter or confusion.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon">GP</span>
+                <div>
+                  <h3>Clear result tracking</h3>
+                  <p>Estimate CGPA quickly and spot your progress at a glance.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <span class="feature-icon">CN</span>
+                <div>
+                  <h3>Directory that helps</h3>
+                  <p>Find student and lecturer contacts with search built in.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="status-banner">
+            <strong id="home-tip-title">Today’s study tip</strong>
+            <p id="home-tip-text">Plan one priority task, one revision block, and one rest break.</p>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="js/home.js"></script>
+</body>
+</html>

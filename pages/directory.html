@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Directory - Student Companion</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .tabs {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 2rem;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .tab-btn {
+      padding: 0.75rem 1.5rem;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      font-size: 1rem;
+      border-bottom: 3px solid transparent;
+      transition: all 0.3s ease;
+    }
+    .tab-btn.active {
+      color: #4CAF50;
+      border-bottom-color: #4CAF50;
+    }
+    .tab-btn:hover {
+      color: rgba(255,255,255,0.9);
+    }
+    .search-bar {
+      margin-bottom: 2rem;
+    }
+    .search-bar input {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      color: white;
+    }
+    .search-bar input::placeholder {
+      color: rgba(255,255,255,0.5);
+    }
+    .directory-table {
+      width: 100%;
+      border-collapse: collapse;
+      background: rgba(255,255,255,0.02);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .directory-table th,
+    .directory-table td {
+      padding: 1rem;
+      text-align: left;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .directory-table th {
+      background: rgba(255,255,255,0.05);
+      font-weight: 600;
+      color: #4CAF50;
+    }
+    .directory-table tr:hover {
+      background: rgba(255,255,255,0.05);
+    }
+    .tab-content {
+      display: none;
+    }
+    .tab-content.active {
+      display: block;
+    }
+    .directory-prompt {
+      margin-bottom: 1.5rem;
+      padding: 1.25rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+    }
+    .directory-prompt p {
+      display: none;
+    }
+    .directory-action-btn {
+      border: 1px solid rgba(56, 189, 248, 0.28);
+      background: rgba(8, 47, 73, 0.45);
+      color: #dbeafe;
+      border-radius: 10px;
+      padding: 0.55rem 0.9rem;
+      cursor: pointer;
+      font-size: 0.88rem;
+      white-space: nowrap;
+    }
+    .directory-action-btn:hover {
+      border-color: rgba(134, 239, 172, 0.55);
+    }
+    .direct-message-form {
+      display: grid;
+      gap: 0.9rem;
+      margin-top: 1rem;
+    }
+    .direct-message-form textarea,
+    .direct-message-form input {
+      width: 100%;
+      padding: 0.8rem 0.95rem;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      color: white;
+    }
+    .direct-message-form label {
+      display: grid;
+      gap: 0.45rem;
+      color: rgba(255,255,255,0.85);
+      font-size: 0.92rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <nav class="navbar">
+        <div class="brand">
+          <span class="brand-mark">SC</span>
+          <div class="brand-copy">
+            <h2>Student Companion</h2>
+            <p>Campus Directory</p>
+          </div>
+        </div>
+
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>Menu</button>
+
+                <div class="nav-links" data-nav-links id="nav-menu">
+          <a class="nav-link" href="dashboard.html">Home</a>
+          <a class="nav-link" href="attendance.html">Attendance</a>
+          <a class="nav-link" href="directory.html">Directory</a>
+          <a class="nav-link" href="results.html">Results</a>
+          <a class="nav-link" href="medical.html">Medical</a>
+          <a class="nav-link" href="chatbot.html">AI Assistant</a>
+          <a class="nav-link" href="course-rep.html">Course Rep</a>
+          <a class="nav-link" href="profile.html">Profile</a>
+          <a class="nav-link" href="lecturer-qr.html">Generate QR</a>
+          <a class="nav-link" href="lecturer-attendance.html">View Attendance</a>
+        </div>
+
+        <div class="profile-panel">
+                    <button id="logout-btn" class="logout-button" type="button" aria-label="Logout">Logout</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="page-intro">
+        <div>
+          <h2>Campus Directory</h2>
+          <p>Find students and lecturers. Search or browse by role.</p>
+        </div>
+        <span class="badge">Directory</span>
+      </section>
+
+      <section id="directory-profile-prompt" class="directory-prompt" hidden>
+        <h3>Complete Your Profile First</h3>
+        <p id="directory-prompt-text"></p>
+        <a class="btn" href="profile.html">Update Profile</a>
+      </section>
+
+      <!-- Tabs -->
+      <div class="tabs" id="directory-tabs">
+        <button class="tab-btn active" data-tab="students">👥 Students</button>
+        <button class="tab-btn" data-tab="lecturers">👨‍🏫 Lecturers</button>
+      </div>
+
+      <!-- Search -->
+      <div class="search-bar">
+        <input 
+          type="text" 
+          id="directory-search" 
+          placeholder="Search by name or registration number..."
+        >
+      </div>
+
+      <!-- Students Tab -->
+      <div id="students-tab" class="tab-content active">
+        <div style="overflow-x: auto;">
+          <table class="directory-table" id="students-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Registration Number</th>
+                <th>Email</th>
+                <th id="students-action-header" hidden>Action</th>
+              </tr>
+            </thead>
+            <tbody id="students-tbody">
+              <tr><td colspan="4" style="text-align: center;">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p id="students-message" style="text-align: center; color: rgba(255,255,255,0.6); margin-top: 1rem;"></p>
+      </div>
+
+      <!-- Lecturers Tab -->
+      <div id="lecturers-tab" class="tab-content">
+        <div style="overflow-x: auto;">
+          <table class="directory-table" id="lecturers-table">
+            <thead>
+              <tr>
+                <th>Name</th>
+                <th>Email</th>
+              </tr>
+            </thead>
+            <tbody id="lecturers-tbody">
+              <tr><td colspan="2" style="text-align: center;">Loading...</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p id="lecturers-message" style="text-align: center; color: rgba(255,255,255,0.6); margin-top: 1rem;"></p>
+      </div>
+    </main>
+  </div>
+
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/shared.js"></script>
+  <script src="../js/directory.js"></script>
+</body>
+</html>

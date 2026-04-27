@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Results</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .profile-redirect-card {
+      margin-bottom: 1.5rem;
+      padding: 1.25rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .profile-redirect-card p {
+      margin: 0 0 1rem;
+      color: rgba(255,255,255,0.8);
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <nav class="navbar">
+        <div class="brand">
+          <span class="brand-mark">SC</span>
+          <div class="brand-copy">
+            <h2>Results</h2>
+            <p>CGPA calculator and progress view</p>
+          </div>
+        </div>
+
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>Menu</button>
+
+                <div class="nav-links" data-nav-links id="nav-menu">
+          <a class="nav-link" href="dashboard.html">Home</a>
+          <a class="nav-link" href="attendance.html">Attendance</a>
+          <a class="nav-link" href="directory.html">Directory</a>
+          <a class="nav-link" href="results.html">Results</a>
+          <a class="nav-link" href="medical.html">Medical</a>
+          <a class="nav-link" href="chatbot.html">AI Assistant</a>
+          <a class="nav-link" href="course-rep.html">Course Rep</a>
+          <a class="nav-link" href="profile.html">Profile</a>
+          <a class="nav-link" href="lecturer-qr.html">Generate QR</a>
+          <a class="nav-link" href="lecturer-attendance.html">View Attendance</a>
+        </div>
+
+        <div class="profile-panel">
+          <button id="logout-btn" class="logout-button" type="button" aria-label="Logout">Logout</button>
+          <a href="profile.html" class="profile-btn" aria-label="Go to profile">
+            <div class="avatar">
+              <span>👤</span>
+            </div>
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="page-intro">
+        <div>
+          <h2>Published Results</h2>
+          <p>This page is view-only. Courses and grades are loaded directly from the database after they are uploaded.</p>
+        </div>
+        <span class="badge">5-point scale</span>
+      </section>
+
+      <section class="summary-strip">
+        <article class="summary-item">
+          <span>Current CGPA</span>
+          <strong id="cgpa-value">0.00</strong>
+        </article>
+        <article class="summary-item">
+          <span>Total units</span>
+          <strong id="unit-value">0</strong>
+        </article>
+        <article class="summary-item">
+          <span>Published courses</span>
+          <strong id="saved-course-value">0</strong>
+        </article>
+      </section>
+
+      <section id="results-profile-prompt" class="profile-redirect-card" hidden>
+        <h3>Complete Your Profile First</h3>
+        <p id="results-prompt-text" hidden></p>
+        <a class="btn" href="profile.html">Update Profile</a>
+      </section>
+
+      <section id="results-content" class="split-layout">
+        <article class="card">
+          <h3>Result Sheet</h3>
+          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;">
+            <div></div>
+            <div id="semester-nav" style="display:flex; gap:8px; align-items:center;">
+              <button id="prev-semester" class="btn secondary" type="button" aria-label="Previous"><span style="font-size:18px; line-height:1;">◀</span></button>
+              <div id="current-semester" style="min-width:220px; text-align:center; font-weight:600;"></div>
+              <button id="next-semester" class="btn secondary" type="button" aria-label="Next"><span style="font-size:18px; line-height:1;">▶</span></button>
+            </div>
+          </div>
+          <p id="results-message" class="message"></p>
+          <div id="course-list" class="course-list"></div>
+        </article>
+
+        <article class="card">
+          <h3>Performance Chart</h3>
+          <div id="results-chart" class="chart">
+            <div class="empty-state">Add courses to see the chart.</div>
+          </div>
+        </article>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/shared.js"></script>
+  <script src="../js/results.js"></script>
+</body>
+</html>

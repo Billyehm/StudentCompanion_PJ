@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Generate QR Code - Student Companion</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <style>
+    .qr-container {
+      background: rgba(255,255,255,0.05);
+      padding: 2rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      max-width: 500px;
+      margin: 2rem auto;
+    }
+    .qr-display {
+      background: white;
+      padding: 2rem;
+      border-radius: 12px;
+      margin: 1.5rem 0;
+      text-align: center;
+    }
+    .qr-display #qrcode {
+      display: inline-block;
+    }
+    .session-info {
+      background: rgba(76, 175, 80, 0.1);
+      border-left: 4px solid #4CAF50;
+      padding: 1rem;
+      border-radius: 8px;
+      margin: 1rem 0;
+    }
+    .qr-print-header {
+      font-size: 1.4rem;
+      font-weight: 700;
+      margin-bottom: 1.5rem;
+      color: #111827;
+      text-transform: uppercase;
+      letter-spacing: 0.02em;
+    }
+    .countdown {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #ff6b6b;
+      text-align: center;
+      margin: 1rem 0;
+    }
+    .session-button {
+      width: 100%;
+      margin: 0.5rem 0;
+    }
+
+    .picker-note {
+      margin-top: 0.5rem;
+      color: var(--muted);
+      font-size: 0.85rem;
+    }
+    .geo-status {
+      margin-top: 0.75rem;
+      padding: 0.75rem 1rem;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+      color: var(--text);
+      font-size: 0.9rem;
+    }
+    .geo-status.error {
+      border-color: rgba(239,68,68,0.45);
+      color: #fecaca;
+    }
+    .geo-status.success {
+      border-color: rgba(34,197,94,0.45);
+      color: #bbf7d0;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <nav class="navbar">
+        <div class="brand">
+          <span class="brand-mark">SC</span>
+          <div class="brand-copy">
+            <h2>Student Companion</h2>
+            <p>QR Code Generator</p>
+          </div>
+        </div>
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>Menu</button>
+                <div class="nav-links" data-nav-links id="nav-menu">
+          <a class="nav-link" href="dashboard.html">Home</a>
+          <a class="nav-link" href="lecturer-qr.html">Generate QR</a>
+          <a class="nav-link" href="lecturer-attendance.html">View Attendance</a>
+          <a class="nav-link" href="directory.html">Directory</a>
+          <a class="nav-link" href="profile.html">Profile</a>
+        </div>
+        <div class="profile-panel">
+                    <button id="logout-btn" class="logout-button" type="button" aria-label="Logout">Logout</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section class="page-intro">
+        <div>
+          <h2>Generate Attendance QR Code</h2>
+          <p>Create a new QR code session for student attendance scanning.</p>
+        </div>
+        <span class="badge">Lecturer Tools</span>
+      </section>
+
+      <!-- Create New Session -->
+      <div class="qr-container">
+        <h3 style="margin-top: 0;">Create New QR Session</h3>
+        <form id="qr-form" class="field-grid">
+          <div class="field-group">
+            <label for="course-code">Course Code *</label>
+            <input id="course-code" type="text" placeholder="Click to choose a course" required list="lecturer-course-options" autocomplete="off">
+            <datalist id="lecturer-course-options"></datalist>
+          </div>
+          <div class="field-group">
+            <label for="course-title">Course Title *</label>
+            <input id="course-title" type="text" placeholder="e.g., Introduction to Programming" required>
+          </div>
+          <div class="field-group">
+            <label for="duration">QR Validity Duration (minutes) *</label>
+            <input id="duration" type="number" min="5" max="240" value="30" required>
+          </div>
+          <div class="field-group">
+            <label for="geofence-radius">Geofence Radius (meters) *</label>
+            <input id="geofence-radius" type="number" min="20" max="1000" value="120" required>
+          </div>
+          <div class="field-group" style="grid-column: 1 / -1;">
+            <button id="capture-location-btn" class="btn btn-secondary" type="button">Use Current Lecturer Location</button>
+            <div id="geofence-status" class="geo-status">Capture the lecturer's live location before generating the QR session.</div>
+          </div>
+          <button class="btn btn-block" type="submit">Generate QR Code</button>
+        </form>
+      </div>
+
+      <!-- Current QR Session -->
+      <div id="current-session" style="display: none;">
+        <div class="qr-container">
+          <h3>Current Session</h3>
+          <div class="session-info">
+            <p><strong id="session-course">Course:</strong> <span id="session-course-value"></span></p>
+            <p><strong>Expires in:</strong> <span id="session-expiry"></span></p>
+            <p><strong>Current Scans:</strong> <span id="session-scans">0</span></p>
+            <p><strong>Geofence Radius:</strong> <span id="session-geofence-radius">120m</span></p>
+          </div>
+
+              <div class="qr-display">
+            <div id="qr-print-header" class="qr-print-header"></div>
+            <div id="qrcode-container"></div>
+          </div>
+
+          <button id="download-qr-btn" class="btn btn-block session-button" style="background: #10b981;">
+            Download QR for Print
+          </button>
+
+          <div style="display: grid; gap: 0.75rem; margin: 1rem 0;">
+            <button id="close-session-btn" class="btn btn-block session-button" style="background: #f59e0b;">
+              Close Session
+            </button>
+            <button id="deactivate-session-btn" class="btn btn-block session-button" style="background: #ef4444;">
+              Deactivate Session
+            </button>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Active Sessions List -->
+      <section style="margin-top: 3rem;">
+        <h3>Active Sessions</h3>
+        <div id="sessions-list"></div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/shared.js"></script>
+  <script src="../js/lecturer-qr.js"></script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Register - Student Companion</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .register-name-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    @media (min-width: 720px) {
+      .register-name-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .register-span-full {
+      grid-column: 1 / -1;
+    }
+  </style>
+</head>
+<body>
+  <main class="auth-shell">
+    <section class="center-box">
+      <div class="auth-header">
+        <span class="badge">Join now</span>
+        <h2>Student Registration</h2>
+        <p>Create your account to access attendance scanning, courses, and academic tools.</p>
+      </div>
+
+      <form id="register-form" class="field-grid">
+        <div class="register-name-grid">
+          <div class="field-group">
+            <label for="register-surname">Surname *</label>
+            <input id="register-surname" type="text" placeholder="Doe" required>
+          </div>
+
+          <div class="field-group">
+            <label for="register-firstname">First Name *</label>
+            <input id="register-firstname" type="text" placeholder="William" required>
+          </div>
+
+          <div class="field-group register-span-full">
+            <label for="register-othername">Middle Name</label>
+            <input id="register-othername" type="text" placeholder="John">
+          </div>
+        </div>
+
+        <div class="field-group">
+          <label for="register-regnumber">Registration Number *</label>
+          <input id="register-regnumber" type="text" placeholder="STU2024001" required>
+        </div>
+
+        <div class="field-group">
+          <label for="register-email">Email *</label>
+          <input id="register-email" type="email" placeholder="you@university.edu" required>
+        </div>
+
+        <div class="field-group">
+          <label for="register-password">Password *</label>
+          <input id="register-password" type="password" placeholder="Choose a secure password" required>
+        </div>
+
+        <div class="field-group">
+          <label for="register-confirm-password">Confirm Password *</label>
+          <input id="register-confirm-password" type="password" placeholder="Confirm your password" required>
+        </div>
+
+        <button class="btn btn-block" type="submit">Create Account</button>
+      </form>
+
+      <p id="register-message" class="message"></p>
+      <p class="form-note">Already have an account? <a href="login.html">Login here</a></p>
+      
+      <hr style="margin: 1.5rem 0; opacity: 0.3;">
+      <p style="font-size: 0.85rem; color: rgba(255,255,255,0.7);">
+        <strong>Note:</strong> Lecturer accounts are managed by administrators. If you are a lecturer, please contact the admin for account creation.
+      </p>
+    </section>
+  </main>
+
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/register.js"></script>
+</body>
+</html>

@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Campus AI Navigator</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .assistant-shell {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(320px, 0.95fr);
+      gap: 24px;
+      margin-top: 20px;
+      align-items: start;
+    }
+
+    @media (max-width: 1100px) {
+      .assistant-shell {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .assistant-panel,
+    .map-panel,
+    .insight-card {
+      background: linear-gradient(180deg, rgba(10, 20, 28, 0.95), rgba(17, 28, 36, 0.98));
+      border: 1px solid rgba(148, 163, 184, 0.22);
+      border-radius: 22px;
+      box-shadow: 0 24px 60px rgba(15, 23, 42, 0.28);
+    }
+
+    .assistant-panel {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto auto auto;
+      min-height: 720px;
+      max-height: calc(100vh - 120px);
+      overflow: hidden;
+    }
+
+    .assistant-topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 18px 20px;
+      border-bottom: 1px solid rgba(148, 163, 184, 0.16);
+      background:
+        radial-gradient(circle at top left, rgba(56, 189, 248, 0.18), transparent 45%),
+        linear-gradient(135deg, rgba(14, 165, 233, 0.08), rgba(34, 197, 94, 0.08));
+    }
+
+    /* Ensure topbar doesn't shrink and stays above the chat area */
+    .assistant-topbar { flex: 0 0 auto; }
+
+    .assistant-topbar h2 {
+      margin: 0;
+      font-size: 1.15rem;
+    }
+
+    .assistant-topbar p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .status-pill {
+      align-self: start;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #082f49;
+      background: linear-gradient(135deg, #67e8f9, #86efac);
+      white-space: nowrap;
+    }
+
+    .chat-messages {
+      overflow-y: auto;
+      min-height: 0;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      background:
+        radial-gradient(circle at top right, rgba(56, 189, 248, 0.08), transparent 35%),
+        linear-gradient(180deg, rgba(15, 23, 42, 0.1), rgba(15, 23, 42, 0));
+    }
+
+    /* Prevent overlapping: chat messages area has a sensible min-height */
+    .chat-messages {
+      min-height: 180px;
+      align-content: start;
+    }
+
+    .message {
+      display: flex;
+      width: 100%;
+      flex: 0 0 auto;
+      animation: riseIn 0.24s ease;
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .message.assistant {
+      justify-content: flex-start;
+    }
+
+    .message-content {
+      display: inline-block;
+      max-width: 88%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      line-height: 1.5;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      white-space: pre-wrap;
+      word-break: break-word;
+      box-sizing: border-box;
+    }
+
+    .message.user .message-content {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.24), rgba(14, 165, 233, 0.3));
+      color: #e0f2fe;
+      border-bottom-right-radius: 6px;
+    }
+
+    .message.assistant .message-content {
+      background: rgba(15, 23, 42, 0.72);
+      color: var(--text);
+      border-bottom-left-radius: 6px;
+    }
+
+    .message.is-typing .message-content {
+      color: var(--muted);
+      font-style: italic;
+    }
+
+    @keyframes riseIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .assistant-tools {
+      padding: 12px 20px 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      position: relative;
+      z-index: 1;
+      background: rgba(8, 15, 22, 0.96);
+    }
+
+    .assistant-tools + .assistant-tools {
+      padding-top: 12px;
+    }
+
+    .assistant-tools { flex: 0 0 auto; }
+
+    .assistant-tools:not(:empty) {
+      border-top: 1px solid rgba(148, 163, 184, 0.12);
+    }
+
+    #suggestions:empty {
+      display: none;
+    }
+
+    .suggestion-chip,
+    .quick-action {
+      border: 1px solid rgba(56, 189, 248, 0.25);
+      background: rgba(8, 47, 73, 0.36);
+      color: #dbeafe;
+      border-radius: 999px;
+      padding: 10px 14px;
+      font-size: 0.86rem;
+      cursor: pointer;
+      transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+    }
+
+    .suggestion-chip:hover,
+    .quick-action:hover,
+    .route-step-btn:hover,
+    .send-btn:hover {
+      transform: translateY(-1px);
+      border-color: rgba(134, 239, 172, 0.56);
+    }
+
+    .input-bar {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      padding: 18px 20px 20px;
+      border-top: 1px solid rgba(148, 163, 184, 0.16);
+      background: rgba(8, 15, 22, 0.98);
+    }
+
+    .input-bar { flex: 0 0 auto; }
+
+    @media (max-width: 640px) {
+      .assistant-panel {
+        min-height: 0;
+        max-height: none;
+      }
+
+      .assistant-topbar {
+        align-items: flex-start;
+        flex-direction: column;
+      }
+
+      .message-content {
+        max-width: 100%;
+      }
+
+      .input-bar {
+        grid-template-columns: 1fr;
+      }
+
+      .send-btn {
+        min-height: 52px;
+      }
+    }
+
+    .chat-input {
+      width: 100%;
+      min-height: 54px;
+      border-radius: 16px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      background: rgba(15, 23, 42, 0.84);
+      color: var(--text);
+      padding: 14px 16px;
+      resize: vertical;
+    }
+
+    .send-btn {
+      border: none;
+      border-radius: 16px;
+      min-width: 140px;
+      padding: 0 20px;
+      background: linear-gradient(135deg, #38bdf8, #22c55e);
+      color: #062333;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .map-panel {
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+    }
+
+    .map-panel-header h3,
+    .insight-card h4 {
+      margin: 0;
+    }
+
+    .map-panel-header p,
+    .insight-card p,
+    .panel-muted {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 0.92rem;
+    }
+
+    .map-stage {
+      background:
+        radial-gradient(circle at top right, rgba(56, 189, 248, 0.08), transparent 42%),
+        linear-gradient(180deg, rgba(15, 23, 42, 0.75), rgba(15, 23, 42, 0.95));
+      border-radius: 18px;
+      border: 1px solid rgba(148, 163, 184, 0.16);
+      padding: 12px;
+    }
+
+    .map-svg-shell {
+      width: 100%;
+      overflow: hidden;
+      border-radius: 16px;
+    }
+
+    .map-svg-shell svg {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+
+    .map-frame {
+      fill: rgba(2, 6, 23, 0.78);
+      stroke: rgba(56, 189, 248, 0.2);
+      stroke-width: 2;
+    }
+
+    .map-title-text {
+      fill: #e2e8f0;
+      font-size: 28px;
+      font-weight: 800;
+    }
+
+    .map-subtitle-text {
+      fill: #93c5fd;
+      font-size: 14px;
+    }
+
+    .map-edge {
+      stroke: rgba(148, 163, 184, 0.28);
+      stroke-width: 7;
+      stroke-linecap: round;
+    }
+
+    .map-route-line {
+      fill: none;
+      stroke: url(#campusGlow);
+      stroke-width: 10;
+      stroke-linejoin: round;
+      stroke-linecap: round;
+      opacity: 0.9;
+      filter: drop-shadow(0 0 10px rgba(56, 189, 248, 0.4));
+    }
+
+    .map-route-stop {
+      fill: #fef08a;
+      stroke: #f59e0b;
+      stroke-width: 3;
+    }
+
+    .map-node {
+      cursor: pointer;
+      outline: none;
+    }
+
+    .map-node-core {
+      stroke: rgba(255, 255, 255, 0.12);
+      stroke-width: 2;
+      transition: transform 0.2s ease, filter 0.2s ease;
+    }
+
+    .map-node:hover .map-node-core,
+    .map-node:focus .map-node-core,
+    .map-node.is-active .map-node-core {
+      transform: scale(1.08);
+      filter: brightness(1.1);
+    }
+
+    .map-node-ring {
+      fill: none;
+      stroke: rgba(125, 211, 252, 0.18);
+      stroke-width: 2;
+    }
+
+    .map-node.is-active .map-node-ring {
+      stroke: rgba(134, 239, 172, 0.85);
+      stroke-width: 4;
+    }
+
+    .map-node-label {
+      fill: #e2e8f0;
+      text-anchor: middle;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .type-entry {
+      fill: #f59e0b;
+    }
+
+    .type-service {
+      fill: #22c55e;
+    }
+
+    .type-social {
+      fill: #f97316;
+    }
+
+    .type-academic {
+      fill: #38bdf8;
+    }
+
+    .map-grid {
+      display: grid;
+      gap: 16px;
+    }
+
+    .insight-card {
+      padding: 16px;
+    }
+
+    .insight-meta {
+      display: inline-flex;
+      margin-top: 10px;
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size: 0.78rem;
+      color: #d1fae5;
+      background: rgba(34, 197, 94, 0.16);
+    }
+
+    .route-summary {
+      margin-top: 10px;
+      color: #dbeafe;
+      font-weight: 600;
+    }
+
+    .route-steps {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .route-step-btn {
+      border-radius: 12px;
+      border: 1px solid rgba(148, 163, 184, 0.2);
+      background: rgba(15, 23, 42, 0.72);
+      color: var(--text);
+      padding: 10px 12px;
+      cursor: pointer;
+    }
+
+    .quick-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <nav class="navbar">
+        <div class="brand">
+          <span class="brand-mark">SC</span>
+          <div class="brand-copy">
+            <h2>Student Companion</h2>
+            <p>Interactive Campus AI</p>
+          </div>
+        </div>
+
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>Menu</button>
+
+        <div class="nav-links" data-nav-links id="nav-menu">
+          <a class="nav-link" href="dashboard.html">Home</a>
+          <a class="nav-link" href="attendance.html">Attendance</a>
+          <a class="nav-link" href="directory.html">Directory</a>
+          <a class="nav-link" href="results.html">Results</a>
+          <a class="nav-link" href="medical.html">Medical</a>
+          <a class="nav-link" href="chatbot.html">AI Assistant</a>
+          <a class="nav-link" href="course-rep.html">Course Rep</a>
+          <a class="nav-link" href="profile.html">Profile</a>
+          <a class="nav-link" href="lecturer-qr.html">Generate QR</a>
+          <a class="nav-link" href="lecturer-attendance.html">View Attendance</a>
+        </div>
+
+        <div class="profile-panel">
+          <button id="logout-btn" class="logout-button" type="button" aria-label="Logout">Logout</button>
+          <a href="profile.html" class="profile-btn" aria-label="Go to profile">
+            <div class="avatar">
+              <span>👤</span>
+            </div>
+          </a>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section>
+        <h1>Campus AI Navigator</h1>
+        <p style="color: var(--muted); margin-bottom: 20px;">
+          Conversational campus help with live map pointing, route pinning, and course-aware answers.
+        </p>
+
+        <div class="assistant-shell">
+          <section class="assistant-panel">
+            <div class="assistant-topbar">
+              <div>
+                <h2>Smart Chat Assistant</h2>
+                <p>Ask for places, class venues, or directions and keep exploring from the map.</p>
+              </div>
+              <div class="status-pill" id="aiStatus">Loading</div>
+            </div>
+
+            <div class="chat-messages" id="chatMessages">
+              <div class="message assistant">
+                <div class="message-content">
+                  I’m loading your campus context. Once ready, you can ask for directions, course venues, or click any stop on the map to continue from there.
+                </div>
+              </div>
+            </div>
+
+            <div class="assistant-tools" id="suggestions"></div>
+
+            <div class="assistant-tools">
+              <button class="quick-action" type="button" data-question="Show me the library">Show the library</button>
+              <button class="quick-action" type="button" data-question="How do I get from Main Gate to Faculty of Science?">Route to Science</button>
+              <button class="quick-action" type="button" data-question="Where is my next class?">My next class</button>
+            </div>
+
+            <div class="input-bar">
+              <textarea
+                id="userInput"
+                class="chat-input"
+                rows="2"
+                placeholder="Ask for directions, a course venue, or a campus building..."
+              ></textarea>
+              <button id="sendBtn" class="send-btn" type="button">Send</button>
+            </div>
+          </section>
+
+          <section class="map-grid">
+            <div class="map-panel">
+              <div class="map-panel-header">
+                <h3>University Map</h3>
+                <p id="mapHint">Tap a place to make it your current point on the map.</p>
+              </div>
+              <div class="map-stage">
+                <div class="map-svg-shell" id="campusMapSvg"></div>
+              </div>
+            </div>
+
+            <div class="insight-card">
+              <h4 id="selectedPlace">Main Gate</h4>
+              <div class="insight-meta" id="selectedPlaceMeta">Entry hub</div>
+              <p id="selectedPlaceBody">Primary arrival point into campus. Nearby stops: Security Post and Student Affairs.</p>
+            </div>
+
+            <div class="insight-card">
+              <h4>Route Tracker</h4>
+              <div class="route-summary" id="routeSummary">No route pinned yet.</div>
+              <div class="route-steps" id="routeSteps"></div>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/shared.js"></script>
+  <script src="../js/chatbot.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      AUTH.protectRoute();
+    });
+  </script>
+</body>
+</html>

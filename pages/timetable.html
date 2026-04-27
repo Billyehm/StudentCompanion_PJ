@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Class Timetable - Student Companion</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .profile-redirect-card {
+      margin-bottom: 1.5rem;
+      padding: 1.25rem;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.12);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .profile-redirect-card p {
+      margin: 0 0 1rem;
+      color: rgba(255,255,255,0.8);
+    }
+  </style>
+</head>
+<body>
+  <div class="page-shell">
+    <header class="site-header">
+      <nav class="navbar">
+        <div class="brand">
+          <span class="brand-mark">SC</span>
+          <div class="brand-copy">
+            <h2>Student Companion</h2>
+            <p>Class Timetable</p>
+          </div>
+        </div>
+
+        <button class="nav-toggle" type="button" aria-label="Toggle navigation" data-nav-toggle>Menu</button>
+
+        <div class="nav-links" data-nav-links id="nav-menu">
+          <a class="nav-link" href="dashboard.html">Home</a>
+          <a class="nav-link" href="attendance.html">Attendance</a>
+          <a class="nav-link" href="directory.html">Directory</a>
+          <a class="nav-link" href="results.html">Results</a>
+          <a class="nav-link" href="medical.html">Medical</a>
+          <a class="nav-link" href="chatbot.html">AI Assistant</a>
+          <a class="nav-link" href="course-rep.html">Course Rep</a>
+          <a class="nav-link" href="profile.html">Profile</a>
+          <a class="nav-link" href="lecturer-qr.html">Generate QR</a>
+          <a class="nav-link" href="lecturer-attendance.html">View Attendance</a>
+        </div>
+
+        <div class="profile-panel">
+          <button id="logout-btn" class="logout-button" type="button" aria-label="Logout">Logout</button>
+        </div>
+      </nav>
+    </header>
+
+    <main class="container">
+      <section>
+        <h1>📅 Class Timetable</h1>
+        <section id="timetable-profile-prompt" class="profile-redirect-card" hidden>
+          <h3>Complete Your Profile First</h3>
+          <p id="timetable-prompt-text" hidden></p>
+          <a class="btn" href="profile.html">Update Profile</a>
+        </section>
+
+        <div id="timetableContainer">
+          <div id="timetableGrid" style="overflow-x: auto;"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="../js/supabase-config.js"></script>
+  <script src="../js/auth.js"></script>
+  <script src="../js/shared.js"></script>
+  <script src="../js/timetable.js"></script>
+
+  <!-- Timetable Modal -->
+  <div id="timetableModal" class="modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;">
+    <div class="modal-content" style="background: var(--surface-strong); border-radius: 16px; padding: 20px; max-width: 500px; width: 90%; max-height: 90%; overflow-y: auto;">
+      <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+        <h3 id="modalTitle">Add Timetable Entry</h3>
+        <button type="button" onclick="closeTimetableModal()" style="background: none; border: none; font-size: 24px; cursor: pointer; color: var(--text);">&times;</button>
+      </div>
+      <form id="timetableForm" onsubmit="saveTimetableEntry(event)">
+        <input type="hidden" id="entryId" />
+        <input type="hidden" id="dayOfWeek" />
+        <input type="hidden" id="startTime" />
+        <input type="hidden" id="endTime" />
+        <input type="hidden" id="venue" />
+        <input type="hidden" id="lecturerName" />
+        <div class="form-group">
+          <label for="courseSelect">Select Course *</label>
+          <select id="courseSelect" required onchange="onCourseSelected()">
+            <option value="">-- Choose a course --</option>
+          </select>
+        </div>
+        <input type="hidden" id="courseCode" />
+        <input type="hidden" id="courseTitle" />
+        <div style="display: flex; gap: 12px;">
+          <button type="submit" class="btn">Save Entry</button>
+          <button type="button" class="btn secondary" onclick="closeTimetableModal()">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</body>
+</html>
