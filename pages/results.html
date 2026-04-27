@@ -18,6 +18,46 @@
       margin: 0 0 1rem;
       color: rgba(255,255,255,0.8);
     }
+
+    .results-sheet-card {
+      overflow: hidden;
+    }
+
+    .semester-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin: 0 0 14px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 16px;
+      background: rgba(255,255,255,0.03);
+    }
+
+    .semester-nav-title {
+      min-width: 0;
+      flex: 1;
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .semester-nav .btn {
+      min-height: 42px;
+      min-width: 42px;
+      padding: 10px 12px;
+    }
+
+    @media (max-width: 720px) {
+      .semester-nav {
+        gap: 8px;
+        padding: 8px 10px;
+      }
+
+      .semester-nav-title {
+        font-size: 0.92rem;
+      }
+    }
   </style>
 </head>
 <body>
@@ -73,7 +113,7 @@
           <strong id="cgpa-value">0.00</strong>
         </article>
         <article class="summary-item">
-          <span>Total units</span>
+          <span>Semester credit units</span>
           <strong id="unit-value">0</strong>
         </article>
         <article class="summary-item">
@@ -89,15 +129,12 @@
       </section>
 
       <section id="results-content" class="split-layout">
-        <article class="card">
+        <article class="card results-sheet-card">
           <h3>Result Sheet</h3>
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:12px;">
-            <div></div>
-            <div id="semester-nav" style="display:flex; gap:8px; align-items:center;">
-              <button id="prev-semester" class="btn secondary" type="button" aria-label="Previous"><span style="font-size:18px; line-height:1;">◀</span></button>
-              <div id="current-semester" style="min-width:220px; text-align:center; font-weight:600;"></div>
-              <button id="next-semester" class="btn secondary" type="button" aria-label="Next"><span style="font-size:18px; line-height:1;">▶</span></button>
-            </div>
+          <div id="semester-nav" class="semester-nav">
+            <button id="prev-semester" class="btn btn-secondary" type="button" aria-label="Previous"><span style="font-size:18px; line-height:1;">◀</span></button>
+            <div id="current-semester" class="semester-nav-title"></div>
+            <button id="next-semester" class="btn btn-secondary" type="button" aria-label="Next"><span style="font-size:18px; line-height:1;">▶</span></button>
           </div>
           <p id="results-message" class="message"></p>
           <div id="course-list" class="course-list"></div>

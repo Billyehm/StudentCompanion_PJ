@@ -31,7 +31,10 @@ async function renderAnnouncements() {
     container.innerHTML = announcements.map((item) => `
       <article class="notification-item ${isAnnouncementExpired(item) ? 'expired' : ''}">
         <div class="notification-meta">
-          <span><strong>${escapeHtml(item.courseCode || 'General')}</strong> • ${escapeHtml(item.type || 'general')}</span>
+          <span>
+            <strong>${escapeHtml(item.courseCode || 'General')}</strong>
+            <span class="notification-tag">${escapeHtml(item.messageScope === 'direct' ? 'Direct' : (item.type || 'general'))}</span>
+          </span>
           <span>${formatDate(item.createdAt || new Date().toISOString())}</span>
         </div>
         <div class="notification-meta">
@@ -41,7 +44,7 @@ async function renderAnnouncements() {
         <div class="notification-meta">
           <span>${escapeHtml(isAnnouncementExpired(item) ? 'Expired announcement' : `Expires ${formatDate(item.expiresAt || item.createdAt || new Date().toISOString())}`)}</span>
         </div>
-        <p>${escapeHtml(item.text)}</p>
+        <p class="notification-text">${escapeHtml(item.text)}</p>
       </article>
     `).join('');
   } catch (error) {
@@ -62,6 +65,9 @@ async function renderAnnouncements() {
 }
 
 function formatAudience(item) {
+  if (item.messageScope === 'direct') {
+    return 'Private message';
+  }
   const department = item.audienceDepartment || 'your department';
   if (item.audienceLevel) {
     return `${department} ${item.audienceLevel} Level`;

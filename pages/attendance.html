@@ -6,53 +6,6 @@
   <title>Attendance - Student Companion</title>
   <link rel="stylesheet" href="../css/style.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jsQR/1.4.0/jsQR.js"></script>
-  <style>
-    #video-container {
-      position: relative;
-      width: 100%;
-      max-width: 500px;
-      margin: 0 auto;
-      background: #000;
-      border-radius: 12px;
-      overflow: hidden;
-    }
-    #video {
-      width: 100%;
-      display: block;
-    }
-    .camera-overlay {
-      position: absolute;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      width: 250px;
-      height: 250px;
-      border: 3px solid #4CAF50;
-      border-radius: 12px;
-      box-shadow: 0 0 0 2000px rgba(0,0,0,0.5);
-    }
-    .status-box {
-      padding: 1.5rem;
-      border-radius: 12px;
-      margin: 1.5rem 0;
-      text-align: center;
-    }
-    .status-box.success {
-      background: rgba(76, 175, 80, 0.1);
-      border: 2px solid #4CAF50;
-      color: #4CAF50;
-    }
-    .status-box.error {
-      background: rgba(255, 107, 107, 0.1);
-      border: 2px solid #ff6b6b;
-      color: #ff6b6b;
-    }
-    .status-box.pending {
-      background: rgba(255, 193, 7, 0.1);
-      border: 2px solid #ffc107;
-      color: #ffc107;
-    }
-  </style>
 </head>
 <body>
   <div class="page-shell">
@@ -96,43 +49,85 @@
         <span class="badge" id="scan-status-badge">Ready to scan</span>
       </section>
 
-      <div id="scan-location-status" class="status-box pending" style="display: none; max-width: 600px; margin: 0 auto 1.5rem auto;">
-        <h3 style="margin: 0 0 0.5rem 0;" id="location-title">Checking location...</h3>
-        <p id="location-text" style="margin: 0;"></p>
-      </div>
+      <section class="scanner-layout">
+        <div class="scanner-card scanner-stage" id="scanner-stage">
+          <div class="scanner-topline">
+            <div>
+              <p class="scanner-kicker">Live attendance scanner</p>
+              <h3 id="scanner-mode-title">Camera ready when you are</h3>
+            </div>
+            <span class="scanner-chip" id="scanner-chip">Idle</span>
+          </div>
 
-      <div style="max-width: 600px; margin: 0 auto;">
-        <!-- Camera Feed -->
-        <div id="video-container">
-          <video id="video" autoplay muted playsinline></video>
-          <div class="camera-overlay"></div>
+          <div id="video-container" class="scanner-viewport scanner-idle">
+            <video id="video" autoplay muted playsinline></video>
+            <div class="scanner-idle-art" id="scanner-idle-art" aria-hidden="true">
+              <div class="scan-ring">
+                <span class="scan-line"></span>
+              </div>
+            </div>
+            <div class="camera-overlay" aria-hidden="true">
+              <span class="scanner-corner scanner-corner-top-left"></span>
+              <span class="scanner-corner scanner-corner-top-right"></span>
+              <span class="scanner-corner scanner-corner-bottom-left"></span>
+              <span class="scanner-corner scanner-corner-bottom-right"></span>
+              <span class="scanner-beam"></span>
+            </div>
+            <div class="scanner-caption" id="scanner-caption">
+              <strong>Scanner idle</strong>
+              <span>Open the camera to start automatic QR detection.</span>
+            </div>
+          </div>
+
+          <div class="scanner-actions">
+            <button id="toggle-camera-btn" class="btn scanner-primary-btn">Start Camera</button>
+            <button id="reset-scan-btn" class="btn btn-secondary scanner-secondary-btn">Reset</button>
+          </div>
+
+          <div class="scanner-help">
+            <div class="scanner-help-item">
+              <strong>Idle</strong>
+              <span>Clean preview area until you start the camera.</span>
+            </div>
+            <div class="scanner-help-item">
+              <strong>Scanning</strong>
+              <span>The moving line shows the scanner is actively reading frames.</span>
+            </div>
+            <div class="scanner-help-item">
+              <strong>Auto capture</strong>
+              <span>As soon as the camera sees a valid QR code, attendance is submitted automatically.</span>
+            </div>
+          </div>
         </div>
 
-        <!-- Status Message -->
-        <div id="status-message" class="status-box pending" style="display: none;">
-          <h3 style="margin: 0 0 0.5rem 0;" id="status-title">Initializing camera...</h3>
-          <p id="status-text" style="margin: 0;"></p>
-        </div>
+        <div class="scanner-side">
+          <div id="status-message" class="status-box pending scanner-card" style="display: none;">
+            <h3 id="status-title">Initializing camera...</h3>
+            <p id="status-text"></p>
+          </div>
 
-        <!-- Attendance Result -->
-        <div id="result-message" class="status-box" style="display: none;">
-          <h3 style="margin: 0 0 0.5rem 0;" id="result-title"></h3>
-          <p id="result-text" style="margin: 0;"></p>
-          <p style="margin: 0.5rem 0 0 0; font-size: 0.9rem;" id="result-details"></p>
-        </div>
+          <div id="scan-location-status" class="status-box pending scanner-card" style="display: none;">
+            <h3 id="location-title">Checking location...</h3>
+            <p id="location-text"></p>
+          </div>
 
-        <!-- Controls -->
-        <div style="text-align: center; margin: 2rem 0;">
-          <button id="toggle-camera-btn" class="btn" style="margin-right: 0.5rem;">📷 Start Camera</button>
-          <button id="reset-scan-btn" class="btn btn-secondary">🔄 Reset</button>
-        </div>
+          <div id="result-message" class="status-box scanner-card" style="display: none;">
+            <h3 id="result-title"></h3>
+            <p id="result-text"></p>
+            <p id="result-details"></p>
+          </div>
 
-        <!-- Scanning History -->
-        <section style="margin-top: 3rem;">
-          <h3>Scanning History</h3>
-          <div id="history-list"></div>
-        </section>
-      </div>
+          <section class="scanner-card history-card">
+            <div class="history-header">
+              <div>
+                <p class="scanner-kicker">Recent activity</p>
+                <h3>Scanning History</h3>
+              </div>
+            </div>
+            <div id="history-list" class="history-list"></div>
+          </section>
+        </div>
+      </section>
     </main>
   </div>
 

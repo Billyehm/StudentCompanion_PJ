@@ -216,11 +216,12 @@ function renderCourses(courses) {
     return;
   }
 
-  // CGPA: calculate across all provided courses (caller may pass full list or a group)
+  // CGPA is based on published grades only.
   const allGradedCourses = courses.filter((course) => course.hasPublishedGrade);
   const totalPoints = allGradedCourses.reduce((sum, course) => sum + (Number(course.units || 0) * Number(course.grade_point || 0)), 0);
-  const totalUnits = allGradedCourses.reduce((sum, course) => sum + Number(course.units || 0), 0);
-  const cgpa = totalUnits ? (totalPoints / totalUnits).toFixed(2) : '0.00';
+  const gradedUnits = allGradedCourses.reduce((sum, course) => sum + Number(course.units || 0), 0);
+  const semesterUnits = courses.reduce((sum, course) => sum + Number(course.units || 0), 0);
+  const cgpa = gradedUnits ? (totalPoints / gradedUnits).toFixed(2) : '0.00';
 
   courseList.innerHTML = `
     <div class="table-wrap">
@@ -251,7 +252,7 @@ function renderCourses(courses) {
   `;
 
   cgpaValue.textContent = cgpa;
-  unitValue.textContent = String(totalUnits);
+  unitValue.textContent = String(semesterUnits);
   savedCourseValue.textContent = String(courses.length);
 
   // Render chart for the currently selected group (semester) showing semester GPA breakdown

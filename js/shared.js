@@ -10,14 +10,19 @@ document.addEventListener('DOMContentLoaded', () => {
   const navLinks = document.querySelector('[data-nav-links]');
 
   if (navToggle && navLinks) {
+    navToggle.innerHTML = '<span aria-hidden="true">&#9776;</span>';
+    navToggle.setAttribute('aria-expanded', 'false');
+
     navToggle.addEventListener('click', () => {
-      navLinks.classList.toggle('open');
+      const isOpen = navLinks.classList.toggle('open');
+      navToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
     });
 
     // Close menu when link is clicked
     navLinks.querySelectorAll('a').forEach(link => {
       link.addEventListener('click', () => {
         navLinks.classList.remove('open');
+        navToggle.setAttribute('aria-expanded', 'false');
       });
     });
   }
@@ -165,16 +170,26 @@ function renderStudentAnnouncementBar() {
     return;
   }
 
-  const latest = announcements[0];
+  const rawLastSeen = localStorage.getItem(getLastSeenKey(user.userId));
+  const lastSeenTime = rawLastSeen ? new Date(rawLastSeen).getTime() : 0;
+  const unreadAnnouncements = announcements.filter((item) => {
+    const createdAt = new Date(item.createdAt || 0).getTime();
+    return !Number.isFinite(lastSeenTime) || lastSeenTime <= 0 || createdAt > lastSeenTime;
+  });
+  if (!unreadAnnouncements.length) {
+    return;
+  }
+
+  const latest = unreadAnnouncements[0];
   const bar = document.createElement('section');
   bar.id = 'student-announcement-bar';
   bar.className = 'student-announcement-bar';
   bar.innerHTML = `
-    <div class="student-announcement-pill">Announcement</div>
+    <div class="student-announcement-pill">${latest.messageScope === 'direct' ? 'Direct Message' : 'Announcement'}</div>
     <div class="student-announcement-content">
       <strong>${escapeHtml(latest.courseCode || 'General')}</strong>
       <span>${escapeHtml(latest.text || '')}</span>
-      <span style="color: var(--muted); font-size: 0.85rem;">By ${escapeHtml(latest.createdBy || 'Course Rep')}</span>
+      <span class="student-announcement-author">By ${escapeHtml(latest.createdBy || 'Course Rep')}</span>
     </div>
     <div class="student-announcement-time">${formatDate(latest.createdAt || new Date().toISOString())}</div>
   `;

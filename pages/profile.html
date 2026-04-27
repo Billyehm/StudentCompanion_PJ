@@ -38,15 +38,20 @@
     .profile-tabs {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 12px;
-      margin-bottom: 1rem;
+      gap: 6px;
+      margin: 0 auto 1rem;
+      width: min(100%, 420px);
+      padding: 6px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
     .profile-tab-btn {
-      border: 1px solid var(--border);
-      background: rgba(255,255,255,0.06);
+      border: none;
+      background: transparent;
       color: var(--text);
-      padding: 14px;
+      padding: 12px 14px;
       border-radius: 14px;
       font-weight: 700;
       cursor: pointer;
@@ -54,8 +59,9 @@
     }
 
     .profile-tab-btn.active {
-      background: rgba(34, 197, 94, 0.18);
-      border-color: rgba(34, 197, 94, 0.46);
+      background: linear-gradient(135deg, rgba(34, 197, 94, 0.24), rgba(56, 189, 248, 0.18));
+      color: #f8fafc;
+      box-shadow: inset 0 0 0 1px rgba(34, 197, 94, 0.24);
     }
 
     .profile-panel {
@@ -81,8 +87,29 @@
     }
 
     @media (max-width: 760px) {
+      .profile-header {
+        padding: 1.4rem 1rem;
+        margin-bottom: 1rem;
+      }
+
+      .profile-avatar {
+        width: 82px;
+        height: 82px;
+        font-size: 1.9rem;
+      }
+
       .profile-tabs {
-        grid-template-columns: 1fr;
+        width: 100%;
+        margin-bottom: 0.9rem;
+      }
+
+      .profile-tab-btn {
+        padding: 11px 10px;
+        font-size: 0.92rem;
+      }
+
+      #security-panel .card {
+        margin-top: 16px !important;
       }
     }
   </style>

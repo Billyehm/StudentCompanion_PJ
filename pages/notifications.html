@@ -10,14 +10,14 @@
   <style>
     .notification-list {
       display: grid;
-      gap: 12px;
+      gap: 10px;
     }
 
     .notification-item {
       border: 1px solid var(--border);
       background: var(--surface-soft);
-      border-radius: 14px;
-      padding: 14px;
+      border-radius: 16px;
+      padding: 12px 13px;
     }
 
     .notification-item.expired {
@@ -28,11 +28,31 @@
     .notification-meta {
       display: flex;
       justify-content: space-between;
-      gap: 8px;
+      gap: 6px 10px;
       flex-wrap: wrap;
       color: var(--muted);
-      font-size: 0.85rem;
-      margin-bottom: 8px;
+      font-size: 0.8rem;
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+
+    .notification-text {
+      color: var(--text);
+      font-size: 0.96rem;
+      line-height: 1.5;
+    }
+
+    .notification-tag {
+      display: inline-flex;
+      align-items: center;
+      padding: 3px 8px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.12);
+      color: #bae6fd;
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
     }
 
     .notification-empty {
@@ -43,6 +63,16 @@
 
     .notification-prompt {
       margin-bottom: 1rem;
+    }
+
+    @media (max-width: 720px) {
+      .notification-item {
+        padding: 11px 12px;
+      }
+
+      .notification-text {
+        font-size: 0.92rem;
+      }
     }
   </style>
 </head>
@@ -74,7 +104,7 @@
       <section class="page-intro">
         <div>
           <h2>Announcements</h2>
-          <p>All announcements sent by class representatives appear here.</p>
+          <p>Your class updates and direct messages appear here.</p>
         </div>
         <span class="badge" id="announcement-count">0 total</span>
       </section>

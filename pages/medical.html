@@ -7,64 +7,202 @@
   <link rel="stylesheet" href="../css/style.css">
   <style>
     .medical-container {
-      max-width: 600px;
+      max-width: 1120px;
       margin: 20px auto;
     }
-    
-    .symptom-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-      gap: 12px;
-      margin: 20px 0;
+
+    .medical-intro {
+      margin-bottom: 18px;
     }
-    
-    .symptom-checkbox {
+
+    .medical-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.08fr) minmax(320px, 0.92fr);
+      gap: 20px;
+      align-items: start;
+    }
+
+    .medical-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 22px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+      backdrop-filter: blur(16px);
+    }
+
+    .medical-card h2,
+    .medical-card h3 {
+      margin: 0;
+    }
+
+    .medical-warning {
+      background: rgba(239, 68, 68, 0.1);
+      border: 1px solid rgba(239, 68, 68, 0.42);
+      border-radius: 16px;
+      padding: 16px;
+      margin-top: 16px;
+    }
+
+    .medical-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 14px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .medical-toolbar-actions {
       display: flex;
       align-items: center;
-      gap: 8px;
-      padding: 12px;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .selected-count {
+      padding: 8px 12px;
+      border-radius: 999px;
+      background: rgba(56, 189, 248, 0.12);
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      color: #bae6fd;
+      font-size: 0.88rem;
+    }
+
+    .symptom-search-wrap {
+      position: sticky;
+      top: 0;
+      z-index: 2;
+      background: linear-gradient(180deg, rgba(15, 27, 49, 0.98), rgba(15, 27, 49, 0.88));
+      padding-bottom: 12px;
+      margin-bottom: 12px;
+    }
+
+    .symptom-search {
+      width: 100%;
+      padding: 12px 14px;
       background: var(--surface-soft);
-      border: 2px solid var(--border);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      color: var(--text);
+      font-size: 0.95rem;
+    }
+
+    .symptom-panel {
+      max-height: 420px;
+      overflow-y: auto;
+      padding-right: 6px;
+      scrollbar-width: thin;
+      scrollbar-color: rgba(56, 189, 248, 0.45) rgba(255, 255, 255, 0.04);
+    }
+
+    .symptom-panel::-webkit-scrollbar {
+      width: 8px;
+    }
+
+    .symptom-panel::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 999px;
+    }
+
+    .symptom-panel::-webkit-scrollbar-thumb {
+      background: rgba(56, 189, 248, 0.45);
+      border-radius: 999px;
+    }
+
+    .symptom-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+      gap: 10px;
+    }
+
+    .symptom-checkbox {
+      position: relative;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--surface-soft);
+      border: 1px solid rgba(148, 163, 184, 0.14);
       border-radius: 12px;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
     }
-    
+
     .symptom-checkbox:hover {
-      border-color: var(--primary);
-      background: var(--surface-strong);
+      border-color: rgba(56, 189, 248, 0.26);
+      background: rgba(255, 255, 255, 0.05);
+      transform: translateY(-1px);
     }
-    
+
     .symptom-checkbox input[type="checkbox"] {
+      appearance: none;
+      -webkit-appearance: none;
       width: 18px;
       height: 18px;
+      min-width: 18px;
+      border-radius: 6px;
+      border: 1.5px solid rgba(148, 163, 184, 0.55);
+      background: rgba(10, 18, 31, 0.92);
+      display: inline-grid;
+      place-items: center;
       cursor: pointer;
+      margin: 0;
     }
-    
-    .symptom-checkbox input[type="checkbox"]:checked + label {
-      color: var(--primary);
+
+    .symptom-checkbox input[type="checkbox"]::after {
+      content: "";
+      width: 9px;
+      height: 5px;
+      border-left: 2px solid #04111f;
+      border-bottom: 2px solid #04111f;
+      transform: rotate(-45deg) scale(0);
+      transition: transform 0.18s ease;
+      transform-origin: center;
+      margin-top: -1px;
     }
-    
+
+    .symptom-checkbox input[type="checkbox"]:checked {
+      background: linear-gradient(135deg, #34d399, #38bdf8);
+      border-color: transparent;
+    }
+
+    .symptom-checkbox input[type="checkbox"]:checked::after {
+      transform: rotate(-45deg) scale(1);
+    }
+
     .symptom-checkbox label {
       flex: 1;
       cursor: pointer;
       font-weight: 500;
+      font-size: 0.9rem;
+      line-height: 1.3;
+      color: var(--text);
     }
-    
+
+    .symptom-empty {
+      padding: 18px;
+      border-radius: 14px;
+      text-align: center;
+      color: var(--muted);
+      background: rgba(255, 255, 255, 0.03);
+    }
+
     .prediction-result {
       background: var(--surface-strong);
-      border: 2px solid var(--border);
+      border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 24px;
-      margin-top: 24px;
-      display: none;
-    }
-    
-    .prediction-result.show {
+      padding: 20px;
       display: block;
+      min-height: 420px;
+      position: sticky;
+      top: 110px;
+    }
+
+    .prediction-result.show {
       animation: slideIn 0.3s ease;
     }
-    
+
     @keyframes slideIn {
       from {
         opacity: 0;
@@ -134,40 +272,80 @@
       cursor: not-allowed;
       transform: none;
     }
-    
-    .floating-analyze-btn {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: var(--primary);
-      color: #000;
-      border: none;
-      padding: 16px 24px;
-      border-radius: 50px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all 0.3s ease;
-      box-shadow: 0 4px 20px rgba(34, 197, 94, 0.4);
-      display: none;
-      z-index: 1000;
-    }
-    
-    .floating-analyze-btn:hover {
-      transform: scale(1.05);
-      box-shadow: 0 6px 25px rgba(34, 197, 94, 0.5);
-    }
-    
-    .floating-analyze-btn.show {
-      display: block;
-    }
-    
+
     .warning-section {
       background: rgba(239, 68, 68, 0.1);
-      border: 2px solid var(--danger);
+      border: 1px solid rgba(239, 68, 68, 0.42);
       border-radius: 12px;
       padding: 16px;
       margin-top: 20px;
       color: #fca5a5;
+    }
+
+    .analysis-placeholder {
+      min-height: 100%;
+      display: grid;
+      align-content: start;
+      gap: 14px;
+    }
+
+    .analysis-placeholder p {
+      color: var(--muted);
+      margin: 0;
+    }
+
+    .analysis-notes {
+      display: grid;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .analysis-note {
+      padding: 12px 14px;
+      border-radius: 14px;
+      background: rgba(255, 255, 255, 0.04);
+      color: #cbd5e1;
+      font-size: 0.92rem;
+    }
+
+    @media (max-width: 900px) {
+      .medical-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .prediction-result {
+        position: static;
+        min-height: auto;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .medical-card,
+      .prediction-result {
+        padding: 16px;
+      }
+
+      .symptom-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .symptom-panel {
+        max-height: 340px;
+      }
+
+      .medical-toolbar,
+      .medical-toolbar-actions {
+        align-items: stretch;
+      }
+
+      .medical-toolbar-actions {
+        width: 100%;
+      }
+
+      .medical-toolbar-actions > * {
+        width: 100%;
+        justify-content: center;
+      }
     }
   </style>
 </head>
@@ -210,47 +388,64 @@
     </header>
 
     <main class="container medical-container">
-      <section>
-        <h1>💊 Medical Symptom Checker</h1>
-        <p style="color: var(--muted); margin-bottom: 20px;">
+      <section class="medical-intro">
+        <h1>Medical Symptom Checker</h1>
+        <p style="color: var(--muted); margin-bottom: 0;">
           Select your symptoms to get a preliminary health assessment. This is not a replacement for professional medical advice.
         </p>
-        
-        <div style="background: rgba(239, 68, 68, 0.1); border: 2px solid var(--danger); border-radius: 12px; padding: 16px; margin-bottom: 20px;">
-          <strong style="color: #dc2626;">⚠️ Important:</strong> This tool provides general health information only and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult with a healthcare provider for accurate diagnosis and treatment.
-        </div>
+      </section>
 
-        <div>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
-            <h3>Select your symptoms:</h3>
-            <div style="display: flex; align-items: center; gap: 12px;">
-              <span id="symptomCount" style="font-size: 0.9em; color: var(--muted);">0 symptoms selected</span>
-              <button onclick="clearAllSymptoms()" style="background: none; border: 1px solid var(--border); color: var(--muted); padding: 8px 16px; border-radius: 8px; font-size: 0.9em; cursor: pointer;">Clear All</button>
-              <button class="btn-primary" id="predictBtn" onclick="predictDisease()" style="margin: 0;">
-                🔍 Analyze Symptoms
+      <section class="medical-layout">
+        <article class="medical-card">
+          <div class="medical-warning">
+          <strong style="color: #dc2626;">⚠️ Important:</strong> This tool provides general health information only and is not a substitute for professional medical advice, diagnosis, or treatment. Always consult with a healthcare provider for accurate diagnosis and treatment.
+          </div>
+
+          <div class="medical-toolbar">
+            <div>
+              <h3>Select your symptoms</h3>
+              <p style="margin: 6px 0 0; color: var(--muted); font-size: 0.95rem;">Pick what you feel right now, then search or scroll inside the symptoms panel.</p>
+            </div>
+
+            <div class="medical-toolbar-actions">
+              <span id="symptomCount" class="selected-count">0 symptoms selected</span>
+              <button onclick="clearAllSymptoms()" class="btn btn-secondary" type="button">Clear All</button>
+              <button class="btn-primary" id="predictBtn" onclick="predictDisease()" type="button">
+                Analyze Symptoms
               </button>
             </div>
           </div>
-          
-          <!-- Symptom Search Bar -->
-          <div style="margin-bottom: 16px;">
-            <input 
+
+          <div class="symptom-panel">
+            <div class="symptom-search-wrap">
+              <input
               type="text" 
               id="symptomSearch" 
-              placeholder="Search symptoms... (e.g., high_fever, headache, cough)" 
-              style="width: 100%; padding: 12px; background: var(--surface-soft); border: 2px solid var(--border); border-radius: 8px; color: var(--text); font-size: 14px;"
+              class="symptom-search"
+              placeholder="Search symptoms like headache, stomach pain, cough..."
             >
-          </div>
-          
-          <div class="symptom-grid" id="symptomGrid">
-            <!-- Symptoms will be populated by JavaScript -->
-          </div>
-        </div>
+            </div>
 
-        <!-- Removed duplicate analyze button -->
+            <div class="symptom-grid" id="symptomGrid">
+              <!-- Symptoms will be populated by JavaScript -->
+            </div>
+            <div class="symptom-empty" id="symptomEmptyState" style="display: none;">
+              No symptoms match your search yet. Try a simpler word like fever, pain, cough, or stomach.
+            </div>
+          </div>
+        </article>
 
-        <div class="prediction-result" id="predictionResult">
-          <h2 style="margin-bottom: 16px; color: var(--accent);">Possible Conditions</h2>
+        <aside class="prediction-result" id="predictionResult">
+          <div class="analysis-placeholder" id="analysisPlaceholder">
+            <h2 style="margin-bottom: 0; color: var(--accent);">Symptom Analysis</h2>
+            <p>Your possible conditions will appear here as soon as you run an analysis.</p>
+            <div class="analysis-notes">
+              <div class="analysis-note">The symptom list now scrolls inside its own box, so you do not need to drag the whole page down just to reach the analysis.</div>
+              <div class="analysis-note">Use the search bar if you already know the symptom name, or scroll the list for the rest.</div>
+              <div class="analysis-note">Only the checkbox changes when you select a symptom, so the cards stay clean and readable.</div>
+            </div>
+          </div>
+          <h2 id="predictionTitle" style="margin-bottom: 16px; color: var(--accent); display: none;">Possible Conditions</h2>
           <div id="diseaseList"></div>
           
           <div class="warning-section">
@@ -260,14 +455,9 @@
               Please consult with a healthcare provider for accurate diagnosis and treatment.
             </p>
           </div>
-        </div>
+        </aside>
       </section>
     </main>
-
-    <!-- Floating Analyze Button -->
-    <button class="floating-analyze-btn" id="floatingPredictBtn" onclick="predictDisease()">
-      🔍 Analyze Selected Symptoms
-    </button>
   </div>
 
   <script src="../js/supabase-config.js"></script>
