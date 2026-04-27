@@ -27,7 +27,7 @@
       border: 1px solid var(--border);
       border-radius: 22px;
       box-shadow: var(--shadow);
-      padding: 20px;
+      padding: 18px;
       backdrop-filter: blur(16px);
     }
 
@@ -48,25 +48,27 @@
       display: flex;
       justify-content: space-between;
       align-items: center;
-      gap: 14px;
+      gap: 10px;
       flex-wrap: wrap;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
     .medical-toolbar-actions {
       display: flex;
       align-items: center;
-      gap: 10px;
-      flex-wrap: wrap;
+      gap: 8px;
+      flex-wrap: nowrap;
+      margin-left: auto;
     }
 
     .selected-count {
-      padding: 8px 12px;
+      padding: 7px 10px;
       border-radius: 999px;
       background: rgba(56, 189, 248, 0.12);
       border: 1px solid rgba(56, 189, 248, 0.2);
       color: #bae6fd;
-      font-size: 0.88rem;
+      font-size: 0.82rem;
+      white-space: nowrap;
     }
 
     .symptom-search-wrap {
@@ -80,16 +82,16 @@
 
     .symptom-search {
       width: 100%;
-      padding: 12px 14px;
+      padding: 10px 12px;
       background: var(--surface-soft);
       border: 1px solid var(--border);
       border-radius: 12px;
       color: var(--text);
-      font-size: 0.95rem;
+      font-size: 0.9rem;
     }
 
     .symptom-panel {
-      max-height: 420px;
+      max-height: 390px;
       overflow-y: auto;
       padding-right: 6px;
       scrollbar-width: thin;
@@ -112,19 +114,19 @@
 
     .symptom-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
-      gap: 10px;
+      grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+      gap: 8px;
     }
 
     .symptom-checkbox {
       position: relative;
       display: flex;
       align-items: center;
-      gap: 10px;
-      padding: 10px 12px;
+      gap: 8px;
+      padding: 8px 10px;
       background: var(--surface-soft);
       border: 1px solid rgba(148, 163, 184, 0.14);
-      border-radius: 12px;
+      border-radius: 10px;
       cursor: pointer;
       transition: border-color 0.2s ease, transform 0.2s ease, background 0.2s ease;
     }
@@ -175,8 +177,8 @@
       flex: 1;
       cursor: pointer;
       font-weight: 500;
-      font-size: 0.9rem;
-      line-height: 1.3;
+      font-size: 0.84rem;
+      line-height: 1.2;
       color: var(--text);
     }
 
@@ -192,9 +194,9 @@
       background: var(--surface-strong);
       border: 1px solid var(--border);
       border-radius: 16px;
-      padding: 20px;
+      padding: 18px;
       display: block;
-      min-height: 420px;
+      min-height: 390px;
       position: sticky;
       top: 110px;
     }
@@ -254,9 +256,12 @@
       background: var(--primary);
       color: #000;
       border: none;
-      padding: 12px 24px;
-      border-radius: 12px;
+      padding: 9px 14px;
+      min-height: 40px;
+      border-radius: 10px;
       font-weight: 600;
+      font-size: 0.9rem;
+      white-space: nowrap;
       cursor: pointer;
       transition: all 0.3s ease;
     }
@@ -273,6 +278,15 @@
       transform: none;
     }
 
+    .medical-toolbar-actions .btn {
+      min-height: 40px;
+      padding: 9px 14px;
+      border-radius: 10px;
+      font-size: 0.9rem;
+      white-space: nowrap;
+      box-shadow: none;
+    }
+
     .warning-section {
       background: rgba(239, 68, 68, 0.1);
       border: 1px solid rgba(239, 68, 68, 0.42);
@@ -282,30 +296,9 @@
       color: #fca5a5;
     }
 
-    .analysis-placeholder {
-      min-height: 100%;
-      display: grid;
-      align-content: start;
-      gap: 14px;
-    }
-
     .analysis-placeholder p {
       color: var(--muted);
-      margin: 0;
-    }
-
-    .analysis-notes {
-      display: grid;
-      gap: 10px;
-      margin-top: 6px;
-    }
-
-    .analysis-note {
-      padding: 12px 14px;
-      border-radius: 14px;
-      background: rgba(255, 255, 255, 0.04);
-      color: #cbd5e1;
-      font-size: 0.92rem;
+      margin: 8px 0 0;
     }
 
     @media (max-width: 900px) {
@@ -335,15 +328,15 @@
 
       .medical-toolbar,
       .medical-toolbar-actions {
-        align-items: stretch;
+        align-items: center;
       }
 
       .medical-toolbar-actions {
         width: 100%;
+        flex-wrap: wrap;
       }
 
       .medical-toolbar-actions > * {
-        width: 100%;
         justify-content: center;
       }
     }
@@ -404,14 +397,13 @@
           <div class="medical-toolbar">
             <div>
               <h3>Select your symptoms</h3>
-              <p style="margin: 6px 0 0; color: var(--muted); font-size: 0.95rem;">Pick what you feel right now, then search or scroll inside the symptoms panel.</p>
             </div>
 
             <div class="medical-toolbar-actions">
               <span id="symptomCount" class="selected-count">0 symptoms selected</span>
-              <button onclick="clearAllSymptoms()" class="btn btn-secondary" type="button">Clear All</button>
+              <button onclick="clearAllSymptoms()" class="btn btn-secondary" type="button">Clear</button>
               <button class="btn-primary" id="predictBtn" onclick="predictDisease()" type="button">
-                Analyze Symptoms
+                Analyze
               </button>
             </div>
           </div>
@@ -439,11 +431,6 @@
           <div class="analysis-placeholder" id="analysisPlaceholder">
             <h2 style="margin-bottom: 0; color: var(--accent);">Symptom Analysis</h2>
             <p>Your possible conditions will appear here as soon as you run an analysis.</p>
-            <div class="analysis-notes">
-              <div class="analysis-note">The symptom list now scrolls inside its own box, so you do not need to drag the whole page down just to reach the analysis.</div>
-              <div class="analysis-note">Use the search bar if you already know the symptom name, or scroll the list for the rest.</div>
-              <div class="analysis-note">Only the checkbox changes when you select a symptom, so the cards stay clean and readable.</div>
-            </div>
           </div>
           <h2 id="predictionTitle" style="margin-bottom: 16px; color: var(--accent); display: none;">Possible Conditions</h2>
           <div id="diseaseList"></div>

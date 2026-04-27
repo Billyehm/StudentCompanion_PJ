@@ -950,33 +950,21 @@ tr:last-child td {
   width: 100%;
 }
 
-.scanner-help,
 .history-list,
 .scanner-side {
   display: grid;
   gap: 14px;
 }
-
-.scanner-help {
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin-top: 18px;
-}
-
-.scanner-help-item,
 .history-item {
   padding: 16px;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.04);
   border: 1px solid rgba(148, 163, 184, 0.08);
 }
-
-.scanner-help-item strong,
 .history-item-main strong {
   display: block;
   margin-bottom: 6px;
 }
-
-.scanner-help-item span,
 .history-item p,
 .history-item-main span,
 .history-empty,
@@ -1173,8 +1161,7 @@ tr:last-child td {
   .hero,
   .split-layout,
   .summary-strip,
-  .scanner-layout,
-  .scanner-help {
+  .scanner-layout {
     grid-template-columns: 1fr;
   }
 

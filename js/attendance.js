@@ -17,10 +17,11 @@ document.addEventListener('DOMContentLoaded', () => {
   const locationStatus = document.getElementById('scan-location-status');
   const locationTitle = document.getElementById('location-title');
   const locationText = document.getElementById('location-text');
+  const barcodeDetector = createBarcodeDetector();
 
   let isCameraActive = false;
   let stream = null;
-  let scanFrameId = null;
+  let scanLoopId = null;
   let isProcessingScan = false;
   let lastScanValue = '';
   let lastScanAt = 0;
@@ -59,15 +60,12 @@ document.addEventListener('DOMContentLoaded', () => {
         captionText: 'Grant camera permission so live QR scanning can begin.'
       });
 
-      stream = await navigator.mediaDevices.getUserMedia({
-        video: {
-          facingMode: { ideal: 'environment' }
-        },
-        audio: false
-      });
+      stream = await requestCameraStream();
 
       video.srcObject = stream;
+      video.setAttribute('playsinline', 'true');
       await video.play().catch(() => {});
+      await waitForVideoReadiness();
       isCameraActive = true;
       toggleCameraBtn.textContent = 'Stop Camera';
 
@@ -82,13 +80,13 @@ document.addEventListener('DOMContentLoaded', () => {
         captionText: 'Hold the QR code inside the frame and we will detect it automatically.'
       });
 
-      scanQRCode();
+      startScanLoop();
     } catch (error) {
       statusMessage.style.display = 'block';
       statusMessage.className = 'status-box error scanner-card';
       document.getElementById('status-title').textContent = 'Camera Access Denied';
       document.getElementById('status-text').textContent =
-        'Enable camera permissions in your browser settings and try again.';
+        'Enable camera permissions in your browser settings, then reload and try again.';
       toggleCameraBtn.textContent = 'Start Camera';
       updateScannerState('error', {
         badge: 'Camera unavailable',
@@ -102,10 +100,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Stop camera
   function stopCamera() {
-    if (scanFrameId) {
-      cancelAnimationFrame(scanFrameId);
-      scanFrameId = null;
-    }
+    stopScanLoop();
     if (stream) {
       stream.getTracks().forEach(track => track.stop());
       stream = null;
@@ -126,40 +121,99 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   }
 
-  // Scan QR code
-  function scanQRCode() {
+  function startScanLoop() {
+    stopScanLoop();
+    queueNextScan(120);
+  }
+
+  function stopScanLoop() {
+    if (scanLoopId) {
+      window.clearTimeout(scanLoopId);
+      scanLoopId = null;
+    }
+  }
+
+  function queueNextScan(delay = 140) {
+    stopScanLoop();
+    scanLoopId = window.setTimeout(runScanPass, delay);
+  }
+
+  async function runScanPass() {
     if (!isCameraActive || isProcessingScan) {
       return;
     }
 
-    if (video.readyState < HTMLMediaElement.HAVE_ENOUGH_DATA || !video.videoWidth || !video.videoHeight) {
-      scanFrameId = requestAnimationFrame(scanQRCode);
+    if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA || !video.videoWidth || !video.videoHeight) {
+      queueNextScan(180);
       return;
     }
 
-    canvas.width = video.videoWidth;
-    canvas.height = video.videoHeight;
-    ctx.drawImage(video, 0, 0);
-
-    let code = null;
-    try {
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      code = jsQR(imageData.data, imageData.width, imageData.height);
-    } catch (_) {
-      code = null;
+    const qrData = await detectQRCodeFromFrame();
+    if (!qrData) {
+      queueNextScan(120);
+      return;
     }
 
-    if (code) {
-      const now = Date.now();
-      if (code.data !== lastScanValue || (now - lastScanAt) > 2500) {
-        lastScanValue = code.data;
-        lastScanAt = now;
-        processQRData(code.data);
-        return;
+    const now = Date.now();
+    if (qrData !== lastScanValue || (now - lastScanAt) > 2500) {
+      lastScanValue = qrData;
+      lastScanAt = now;
+      await processQRData(qrData);
+      return;
+    }
+
+    queueNextScan(250);
+  }
+
+  async function detectQRCodeFromFrame() {
+    const nativeResult = await detectWithBarcodeDetector();
+    if (nativeResult) {
+      return nativeResult;
+    }
+
+    return detectWithJsQr();
+  }
+
+  async function detectWithBarcodeDetector() {
+    if (!barcodeDetector) {
+      return null;
+    }
+
+    try {
+      const barcodes = await barcodeDetector.detect(video);
+      if (!Array.isArray(barcodes) || !barcodes.length) {
+        return null;
       }
-      scanFrameId = requestAnimationFrame(scanQRCode);
-    } else if (isCameraActive) {
-      scanFrameId = requestAnimationFrame(scanQRCode);
+
+      const match = barcodes.find((item) => item && typeof item.rawValue === 'string' && item.rawValue.trim());
+      return match ? match.rawValue.trim() : null;
+    } catch (_) {
+      return null;
+    }
+  }
+
+  function detectWithJsQr() {
+    if (typeof jsQR !== 'function' || !ctx) {
+      return null;
+    }
+
+    const maxDimension = 960;
+    const scale = Math.min(1, maxDimension / Math.max(video.videoWidth, video.videoHeight));
+    const targetWidth = Math.max(240, Math.round(video.videoWidth * scale));
+    const targetHeight = Math.max(240, Math.round(video.videoHeight * scale));
+
+    canvas.width = targetWidth;
+    canvas.height = targetHeight;
+    ctx.drawImage(video, 0, 0, targetWidth, targetHeight);
+
+    try {
+      const imageData = ctx.getImageData(0, 0, targetWidth, targetHeight);
+      const code = jsQR(imageData.data, imageData.width, imageData.height, {
+        inversionAttempts: 'attemptBoth'
+      });
+      return code && typeof code.data === 'string' ? code.data.trim() : null;
+    } catch (_) {
+      return null;
     }
   }
 
@@ -185,6 +239,10 @@ document.addEventListener('DOMContentLoaded', () => {
         captionText: 'Verifying the session and submitting your attendance now.'
       });
       stopCamera();
+      statusMessage.style.display = 'block';
+      statusMessage.className = 'status-box pending scanner-card';
+      document.getElementById('status-title').textContent = 'QR code detected';
+      document.getElementById('status-text').textContent = 'Verifying the session and submitting your attendance.';
       updateScannerState('processing', {
         badge: 'Authorizing',
         chip: 'Checking',
@@ -243,9 +301,80 @@ document.addEventListener('DOMContentLoaded', () => {
         captionTitle: 'No valid attendance recorded',
         captionText: 'Reset or reopen the camera and try scanning the lecturer QR code again.'
       });
+      statusMessage.style.display = 'block';
+      statusMessage.className = 'status-box error scanner-card';
+      document.getElementById('status-title').textContent = 'Scan could not be completed';
+      document.getElementById('status-text').textContent = error.message || 'The scanned code is not valid. Please try again.';
     } finally {
       isProcessingScan = false;
     }
+  }
+
+  function createBarcodeDetector() {
+    if (typeof window === 'undefined' || typeof window.BarcodeDetector !== 'function') {
+      return null;
+    }
+
+    try {
+      return new window.BarcodeDetector({ formats: ['qr_code'] });
+    } catch (_) {
+      return null;
+    }
+  }
+
+  async function requestCameraStream() {
+    const cameraProfiles = [
+      {
+        video: {
+          facingMode: { ideal: 'environment' },
+          width: { ideal: 1280 },
+          height: { ideal: 720 }
+        },
+        audio: false
+      },
+      {
+        video: {
+          facingMode: 'environment'
+        },
+        audio: false
+      },
+      {
+        video: true,
+        audio: false
+      }
+    ];
+
+    let lastError = null;
+    for (const profile of cameraProfiles) {
+      try {
+        return await navigator.mediaDevices.getUserMedia(profile);
+      } catch (error) {
+        lastError = error;
+      }
+    }
+
+    throw lastError || new Error('Unable to start the camera.');
+  }
+
+  async function waitForVideoReadiness() {
+    if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && video.videoWidth && video.videoHeight) {
+      return;
+    }
+
+    await new Promise((resolve) => {
+      let settled = false;
+      const finish = () => {
+        if (settled) {
+          return;
+        }
+        settled = true;
+        resolve();
+      };
+
+      video.addEventListener('loadeddata', finish, { once: true });
+      video.addEventListener('loadedmetadata', finish, { once: true });
+      window.setTimeout(finish, 1200);
+    });
   }
 
   async function collectScanContext() {
