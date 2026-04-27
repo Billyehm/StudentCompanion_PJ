@@ -218,26 +218,73 @@
     .input-bar { flex: 0 0 auto; }
 
     @media (max-width: 640px) {
+      .assistant-shell {
+        gap: 16px;
+        margin-top: 14px;
+      }
+
       .assistant-panel {
         min-height: 0;
-        max-height: none;
+        height: min(72vh, 620px);
+        max-height: min(72vh, 620px);
+        border-radius: 18px;
       }
 
       .assistant-topbar {
         align-items: flex-start;
         flex-direction: column;
+        padding: 14px 16px;
+        gap: 10px;
+      }
+
+      .assistant-topbar h2 {
+        font-size: 1rem;
+      }
+
+      .assistant-topbar p {
+        font-size: 0.84rem;
       }
 
       .message-content {
         max-width: 100%;
+        padding: 12px 13px;
+        font-size: 0.92rem;
+      }
+
+      .chat-messages {
+        min-height: 0;
+        padding: 14px;
+        gap: 12px;
+        overscroll-behavior: contain;
+      }
+
+      .assistant-tools {
+        padding: 10px 14px 0;
+        gap: 8px;
+      }
+
+      .suggestion-chip,
+      .quick-action {
+        padding: 8px 11px;
+        font-size: 0.8rem;
       }
 
       .input-bar {
         grid-template-columns: 1fr;
+        gap: 10px;
+        padding: 14px 14px 16px;
+      }
+
+      .chat-input {
+        min-height: 48px;
+        padding: 12px 14px;
+        border-radius: 14px;
       }
 
       .send-btn {
         min-height: 52px;
+        min-width: 0;
+        border-radius: 14px;
       }
     }
 
